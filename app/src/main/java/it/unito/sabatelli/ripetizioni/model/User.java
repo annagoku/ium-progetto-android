@@ -6,6 +6,7 @@ public class User implements Serializable {
     String username;
     String name;
     String surname;
+    String role;
 
     public User(String username, String name, String surname) {
         this.username = username;
@@ -35,5 +36,13 @@ public class User implements Serializable {
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

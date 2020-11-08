@@ -10,12 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ripetizioni"
         >
+
         <activity
-            android:name=".HomeActivity"
-            android:label="@string/title_activity_home"
-            android:theme="@style/Theme.Ripetizioni.NoActionBar"></activity>
-        <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Ripetizioni.NoActionBar">
             <intent-filter>
@@ -24,6 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_home"
+            android:theme="@style/Theme.Ripetizioni.NoActionBar"></activity>
     </application>
 
 </manifest>

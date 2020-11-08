@@ -3,31 +3,53 @@ package it.unito.sabatelli.ripetizioni;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import android.view.View;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
+import android.view.View;
 import android.widget.TextView;
+
+import com.google.android.material.navigation.NavigationView;
 
 import it.unito.sabatelli.ripetizioni.model.User;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    User user =null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
-        /*Toolbar toolbar = findViewById(R.id.toolbar);
+
+        Intent intent = getIntent();
+        user = (User) intent.getSerializableExtra("USER");
+
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        View header = ((NavigationView)findViewById(R.id.nav_view)).getHeaderView(0);
+        ((TextView) header.findViewById(R.id.userText)).setText(user.getName()+" "+user.getSurname());
+        ((TextView) header.findViewById(R.id.usernameRoleText)).setText(user.getUsername()+" ("+user.getRole()+")");
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.nav_app_bar_open_drawer_description, R.string.nav_app_bar_navigate_up_description);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -37,39 +59,78 @@ public class MainActivity extends AppCompatActivity {
         });*/
     }
 
-    /** Called when the user taps the Login button */
-    public void login(View view) {
-        Intent intent = new Intent(this, HomeActivity.class);
-        TextView errorView = findViewById(R.id.textErrorMessage);
-        errorView.setText(null);
-        errorView.setVisibility(View.INVISIBLE);
-        EditText editTextUsername = findViewById(R.id.editTextUsername);
-        EditText editTextPassword = findViewById(R.id.editTextPassword);
-        String username = editTextUsername.getText().toString();
-        String password = editTextPassword.getText().toString();
 
-        int idMessage = validate(username, password);
 
-        if(idMessage > 0) {
-            //allore c'è un errore
-            errorView.setText(idMessage);
-            errorView.setVisibility(View.VISIBLE);
-            return;
-        }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        //todo effettuare login vero
-        User user = new User(username, "Nome", "Cognome");
-        intent.putExtra("USER", user);
-
-        startActivity(intent);
-
+        return true;
     }
 
-    private int validate(String user, String pwd) {
-        if(user == null || "".equals(user) || pwd == null || "".equals(pwd))
-            return R.string.msg_login_missing_inpus;
-        else
-            return -1;
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+
+        /*switch (id) {
+            case R.id.action_logout:
+                logout(item.getActionView());
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }*/
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.dr_action_logout) {
+            logout(item.getActionView());
+            // Handle the camera action
+        } /*else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }*/
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    // ACTIONS
+    public void logout(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        user = null;
+        startActivity(intent);
     }
 
 
