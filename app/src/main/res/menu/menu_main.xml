@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="it.unito.sabatelli.ripetizioni.HomeActivity">
+
+
+    <item
+        android:id="@+id/userMenuItem"
+        android:checkable="false"
+        android:title="@string/label_user"
+        android:visible="true" />
+    <item
+        android:id="@+id/action_home"
+        android:orderInCategory="100"
+        android:title="@string/action_home"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_catalog"
+        android:title="@string/action_catalog" />
+    <item
+        android:id="@+id/action_logout"
+        android:icon="@android:drawable/ic_lock_power_off"
+        android:title="@string/action_logout"
+        app:showAsAction="ifRoom" />
+</menu>

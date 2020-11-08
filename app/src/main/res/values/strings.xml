@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Ripetizioni</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_login">Login</string>
+    <string name="action_home">Prenotazioni</string>
+    <string name="action_catalog">Catalogo</string>
+    <string name="login_username_label">Username</string>
+    <string name="login_password_label">Password</string>
+    <string name="label_user">Utente</string>
+
+
+    <!-- Strings used for error messages-->
+    <string name="msg_login_missing_inpus">Inserire username e password</string>
+    <string name="msg_login_error">Credenziali di accesso errate</string>
+
+    <!-- Strings used for fragments for navigation -->
+
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_home">HomeActivity</string>
+</resources>
