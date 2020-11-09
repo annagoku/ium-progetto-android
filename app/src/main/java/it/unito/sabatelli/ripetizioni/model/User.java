@@ -14,6 +14,16 @@ public class User implements Serializable {
         this.surname = surname;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
+
     public String getUsername() {
         return username;
     }
