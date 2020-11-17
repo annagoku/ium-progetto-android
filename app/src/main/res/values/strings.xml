@@ -10,14 +10,17 @@
     <string name="login_password_label">Password</string>
     <string name="label_user">Utente</string>
 
-
     <!-- Strings used for error messages-->
     <string name="msg_login_missing_inpus">Inserire username e password</string>
     <string name="msg_login_error">Credenziali di accesso errate</string>
 
     <!-- Strings used for fragments for navigation -->
 
-    <string name="first_fragment_label">First Fragment</string>
+    <string name="dialog_statelesson_title">Modifica stato prenotazione</string>
+    <string name="dialog_statelesson_done">Segna come effettuata</string>
+    <string name="dialog_statelesson_delete">Annulla prenotazione</string>
+    <string name="dialog_save">Salva</string>
+    <string name="dialog_cancel">Annulla</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>

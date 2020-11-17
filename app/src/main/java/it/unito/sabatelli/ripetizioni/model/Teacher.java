@@ -7,6 +7,10 @@ public class Teacher implements Serializable {
     String name;
     String surname;
 
+    public String getFullName() {
+        return getName()+" "+getSurname();
+    }
+
     public String getBadge() {
         return badge;
     }

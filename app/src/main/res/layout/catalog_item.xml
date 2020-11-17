@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/catalog_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:id="@+id/text_lesson_item_daycontent"
+        android:layout_width="240dp"
+        android:layout_height="37dp"
+        android:contentDescription="daycontent"
+        android:gravity="center"
+        android:paddingLeft="15dp"
+        android:text="DAYCONTENT"
+        android:textAlignment="viewStart"
+        android:textColor="@color/teal_700"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_lesson_item_course"
+        android:layout_width="wrap_content"
+        android:layout_height="54dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="COURSE"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_lesson_item_daycontent" />
+
+    <TextView
+        android:id="@+id/text_lesson_item_teacher"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="Teacher Fullname"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_lesson_item_course" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

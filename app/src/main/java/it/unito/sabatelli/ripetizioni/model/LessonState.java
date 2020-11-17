@@ -3,22 +3,22 @@ package it.unito.sabatelli.ripetizioni.model;
 import java.io.Serializable;
 
 public class LessonState implements Serializable {
-    int statecode;
-    String statename;
+    int code;
+    String name;
 
-    public int getStatecode() {
-        return statecode;
+    public int getCode() {
+        return code;
     }
 
-    public void setStatecode(int statecode) {
-        this.statecode = statecode;
+    public void setCode(int code) {
+        this.code = code;
     }
 
-    public String getStatename() {
-        return statename;
+    public String getName() {
+        return name;
     }
 
-    public void setStatename(String statename) {
-        this.statename = statename;
+    public void setName(String name) {
+        this.name = name;
     }
 }

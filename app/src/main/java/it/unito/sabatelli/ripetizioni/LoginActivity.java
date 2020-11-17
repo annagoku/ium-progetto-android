@@ -23,7 +23,9 @@ import java.util.Map;
 
 import it.unito.sabatelli.ripetizioni.httpclient.GsonRequest;
 import it.unito.sabatelli.ripetizioni.httpclient.HttpClientSingleton;
+import it.unito.sabatelli.ripetizioni.model.GenericResponse;
 import it.unito.sabatelli.ripetizioni.model.User;
+import it.unito.sabatelli.ripetizioni.model.UserSession;
 
 public class LoginActivity extends AppCompatActivity {
     User user = null;
@@ -32,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        HttpClientSingleton.getInstance(this.getApplicationContext());
 
     }
 
@@ -59,33 +61,45 @@ public class LoginActivity extends AppCompatActivity {
         }
         ProgressBar progress = findViewById(R.id.progressBar);
 
-        //todo effettuare login vero
-
         String path = getString(R.string.main_server_url)+"/public/login";
         System.out.println("calling "+path);
 
-        StringRequest loginRequest = new StringRequest(Request.Method.POST, path,
-                new Response.Listener<String>() {
+        GsonRequest loginRequest = new GsonRequest(Request.Method.POST, path, GenericResponse.class, null,
+                new Response.Listener<GenericResponse>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(GenericResponse response) {
                         System.out.println("Risposta da login "+response);
-                        getUserAndStartActivity(intent);
+                        runOnUiThread(() -> {
+                            getUserAndStartActivity(intent);
+                        });
+
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        progress.setVisibility(View.GONE);
+                        System.err.println(error.toString());
 
-                        errorView.setText("Credenziali di accesso errate");
-                        errorView.setVisibility(View.VISIBLE);
+
+                        runOnUiThread(() -> {
+                            String message = "Si è verificato un errore "+error.getMessage();
+                            if(error.networkResponse.statusCode == 401) {
+                                message = "Credenziali di accesso errate";
+                            }
+                            progress.setVisibility(View.GONE);
+
+                            errorView.setText(message);
+                            errorView.setVisibility(View.VISIBLE);
+
+                        });
+
                     }
                 }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
-                params.put("username", username);
-                params.put("password", password);
+                params.put("user", username);
+                params.put("psw", password);
 
                 return params;
             }
@@ -93,11 +107,6 @@ public class LoginActivity extends AppCompatActivity {
         progress.setVisibility(View.VISIBLE);
         HttpClientSingleton.getInstance(this.getApplicationContext()).addToRequestQueue(loginRequest);
 
-        /*User user = new User(username, "Nome", "Cognome");
-        user.setRole("student");
-        intent.putExtra("USER", user);
-
-        startActivity(intent);*/
 
     }
 
@@ -109,25 +118,39 @@ public class LoginActivity extends AppCompatActivity {
         errorView.setText(null);
         errorView.setVisibility(View.INVISIBLE);
         GsonRequest<User> request = new GsonRequest<User>(Request.Method.GET,
-                getString(R.string.main_server_url)+"/private/sessionInfo",
+                getString(R.string.main_server_url)+"/private/userlog",
                 User.class,
                 null, new Response.Listener<User>() {
                     @Override
                     public void onResponse(User response) {
                         System.out.println("Ricevute info utente -> "+response);
-                        intent.putExtra("USER", response);
-                        progress.setVisibility(View.GONE);
+                        runOnUiThread(() -> {
+                            if(response == null) {
+                                errorView.setText("Errore nel reperire le informazioni utente");
+                                errorView.setVisibility(View.VISIBLE);
+                                progress.setVisibility(View.GONE);
 
-                        startActivity(intent);
+                            }
+                            else {
+                                intent.putExtra("USER", response);
+                                progress.setVisibility(View.GONE);
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        progress.setVisibility(View.GONE);
-                        errorView.setText("Errore di accesso");
-                        errorView.setVisibility(View.VISIBLE);
-                    }
+                        runOnUiThread(() -> {
+                            progress.setVisibility(View.GONE);
+                            errorView.setText("Errore di accesso");
+                            errorView.setVisibility(View.VISIBLE);
+
+                        });
+                                            }
                 });
         HttpClientSingleton.getInstance(this.getApplicationContext()).addToRequestQueue(request);
 

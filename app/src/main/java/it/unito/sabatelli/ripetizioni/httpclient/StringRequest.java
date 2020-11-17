@@ -14,19 +14,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.unito.sabatelli.ripetizioni.LoginActivity;
-
-public class GsonRequest <T> extends Request<T> {
-    private final Gson gson = new Gson();
-    private final Class<T> clazz;
+public class StringRequest extends Request<String> {
     private final Map<String, String> headers;
-    private final Response.Listener<T> listener;
+    private final Response.Listener<String> listener;
 
 
-    public GsonRequest(int method, String url, Class<T> clazz, Map<String, String> headers,
-                       Response.Listener<T> listener, Response.ErrorListener errorListener) {
+    public StringRequest(int method, String url,  Map<String, String> headers,
+                         Response.Listener<String> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
-        this.clazz = clazz;
         this.headers = headers;
         this.listener = listener;
     }
@@ -47,24 +42,24 @@ public class GsonRequest <T> extends Request<T> {
     }
 
     @Override
-    protected void deliverResponse(T response) {
+    protected void deliverResponse(String response) {
         listener.onResponse(response);
     }
 
     @Override
-    protected Response<T> parseNetworkResponse(NetworkResponse response) {
+    protected Response<String> parseNetworkResponse(NetworkResponse response) {
         try {
 
             HttpClientSingleton.getInstance().checkSessionCookie(response.headers);
 
-            String json = new String(
+            String data = new String(
                     response.data,
                     HttpHeaderParser.parseCharset(response.headers));
 
             System.out.println("Response status -> "+response.statusCode);
-            System.out.println("GsonRequest -> data -> "+json);
+            System.out.println("StringRequest -> data -> "+data);
             return Response.success(
-                    gson.fromJson(json, clazz),
+                    data,
                     HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));

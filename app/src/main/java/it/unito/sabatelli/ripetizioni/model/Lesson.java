@@ -1,5 +1,7 @@
 package it.unito.sabatelli.ripetizioni.model;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class Lesson implements Serializable {
@@ -7,10 +9,16 @@ public class Lesson implements Serializable {
     Teacher teacher;
     Day day;
     Slot slot;
+    Course course;
     LessonState state;
 
+    @NonNull
+    @Override
+    public String toString() {
+        return day.getDayname()+" "+slot.getStartHour()+" "+course.getName()+ " "+teacher.getFullName();
+    }
 
-        public int getId() {
+    public int getId() {
             return id;
         }
 
@@ -49,4 +57,12 @@ public class Lesson implements Serializable {
         public void setState(LessonState state) {
             this.state = state;
         }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
 }

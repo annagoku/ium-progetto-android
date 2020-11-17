@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_server_url">https://c7f78b51-6a58-4de5-bfd1-778dcbdce06b.mock.pstmn.io</string>
+    <string name="main_server_url">http://192.168.1.110:8080/Ripetizioni_war</string>
 </resources>

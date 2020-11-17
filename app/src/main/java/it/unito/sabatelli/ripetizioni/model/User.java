@@ -3,10 +3,16 @@ package it.unito.sabatelli.ripetizioni.model;
 import java.io.Serializable;
 
 public class User implements Serializable {
+    String id;
     String username;
     String name;
     String surname;
     String role;
+
+
+
+    public User() {
+    }
 
     public User(String username, String name, String surname) {
         this.username = username;
@@ -17,6 +23,7 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User{" +
+                "id='"+id+ "'"+
                 "username='" + username + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
@@ -24,6 +31,14 @@ public class User implements Serializable {
                 '}';
     }
 
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
     public String getUsername() {
         return username;
     }
