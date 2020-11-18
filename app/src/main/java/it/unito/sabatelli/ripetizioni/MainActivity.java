@@ -21,7 +21,7 @@ import com.google.android.material.navigation.NavigationView;
 import it.unito.sabatelli.ripetizioni.model.User;
 import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
 import it.unito.sabatelli.ripetizioni.ui.fragments.CatalogFragment;
-import it.unito.sabatelli.ripetizioni.ui.fragments.CourseFragment;
+import it.unito.sabatelli.ripetizioni.ui.fragments.CoursesFragment;
 import it.unito.sabatelli.ripetizioni.ui.fragments.LessonsFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .commit();
                 break;
             case R.id.dr_action_courses:
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_id, new CourseFragment())
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_id, new CoursesFragment())
                         .commit();
                 break;
             case R.id.dr_action_teachers:

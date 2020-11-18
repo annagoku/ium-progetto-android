@@ -27,14 +27,14 @@ import it.unito.sabatelli.ripetizioni.model.GenericResponse;
 import it.unito.sabatelli.ripetizioni.model.User;
 import it.unito.sabatelli.ripetizioni.model.UserSession;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AbstractActivity {
     User user = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        HttpClientSingleton.getInstance(this.getApplicationContext());
+
 
     }
 
@@ -61,10 +61,28 @@ public class LoginActivity extends AppCompatActivity {
         }
         ProgressBar progress = findViewById(R.id.progressBar);
 
-        String path = getString(R.string.main_server_url)+"/public/login";
-        System.out.println("calling "+path);
+        progress.setVisibility(View.VISIBLE);
 
-        GsonRequest loginRequest = new GsonRequest(Request.Method.POST, path, GenericResponse.class, null,
+        apiManager.login(username, password, (v) -> {
+            getUserAndStartActivity(intent);
+        }, (error) -> {
+
+                    String message = "Si è verificato un errore";
+                    if(error.networkResponse != null && error.networkResponse.statusCode == 401) {
+                        message = "Credenziali di accesso errate";
+                    }
+                    progress.setVisibility(View.GONE);
+
+                    errorView.setText(message);
+                    errorView.setVisibility(View.VISIBLE);
+
+
+        });
+
+
+
+
+        /* GsonRequest loginRequest = new GsonRequest(Request.Method.POST, path, GenericResponse.class, null,
                 new Response.Listener<GenericResponse>() {
                     @Override
                     public void onResponse(GenericResponse response) {
@@ -80,10 +98,9 @@ public class LoginActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         System.err.println(error.toString());
 
-
                         runOnUiThread(() -> {
-                            String message = "Si è verificato un errore "+error.getMessage();
-                            if(error.networkResponse.statusCode == 401) {
+                            String message = "Si è verificato un errore";
+                            if(error.networkResponse != null && error.networkResponse.statusCode == 401) {
                                 message = "Credenziali di accesso errate";
                             }
                             progress.setVisibility(View.GONE);
@@ -104,9 +121,8 @@ public class LoginActivity extends AppCompatActivity {
                 return params;
             }
         };
-        progress.setVisibility(View.VISIBLE);
         HttpClientSingleton.getInstance(this.getApplicationContext()).addToRequestQueue(loginRequest);
-
+*/
 
     }
 
@@ -117,7 +133,31 @@ public class LoginActivity extends AppCompatActivity {
         TextView errorView = findViewById(R.id.textErrorMessage);
         errorView.setText(null);
         errorView.setVisibility(View.INVISIBLE);
-        GsonRequest<User> request = new GsonRequest<User>(Request.Method.GET,
+
+        apiManager.getUserInfo((user) -> {
+            if(user == null) {
+                errorView.setText("Errore nel reperire le informazioni utente");
+                errorView.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.GONE);
+
+            }
+            else {
+                intent.putExtra("USER", user);
+                progress.setVisibility(View.GONE);
+                startActivity(intent);
+                finish();
+            }
+        }, (error) -> {
+
+                progress.setVisibility(View.GONE);
+                errorView.setText("Errore di accesso");
+                errorView.setVisibility(View.VISIBLE);
+
+            
+        });
+
+
+        /*GsonRequest<User> request = new GsonRequest<User>(Request.Method.GET,
                 getString(R.string.main_server_url)+"/private/userlog",
                 User.class,
                 null, new Response.Listener<User>() {
@@ -153,7 +193,7 @@ public class LoginActivity extends AppCompatActivity {
                                             }
                 });
         HttpClientSingleton.getInstance(this.getApplicationContext()).addToRequestQueue(request);
-
+*/
     }
 
     private int validate(String user, String pwd) {

@@ -23,6 +23,8 @@ import com.google.gson.JsonParser;
 
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.Utility;
+import it.unito.sabatelli.ripetizioni.api.ApiFactory;
+import it.unito.sabatelli.ripetizioni.api.RipetizioniApiManager;
 import it.unito.sabatelli.ripetizioni.httpclient.HttpClientSingleton;
 import it.unito.sabatelli.ripetizioni.httpclient.StringRequest;
 import it.unito.sabatelli.ripetizioni.model.Lesson;
@@ -79,52 +81,18 @@ public class LessonsFragment extends Fragment {
 
 
     private void retrieveLessons() {
-        Context ctx = this.getContext();
 
-        StringRequest request = new StringRequest(
-                Request.Method.GET,
-                getString(R.string.main_server_url)+"/private/lessons?list", null,
-                new Response.Listener<String> () {
+        RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
 
-                    @Override
-                    public void onResponse(String response) {
+        apiManager.getReservations((listLessons) -> {
+            vModel.reservations.clear();
+            vModel.reservations.addAll(listLessons);
+            adapter.reload(vModel.reservations);
+        }, (error) -> {
+            if(!Utility.isSessionExpired(error, view)) {
+                Toast.makeText(getActivity(), "Received status "+error.networkResponse.statusCode, Toast.LENGTH_SHORT).show();
 
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Gson gson = new Gson();
-                                JsonArray array = new JsonParser().parse(response).getAsJsonArray();
-
-                                vModel.reservations.clear();
-                                for(JsonElement el : array) {
-                                    vModel.reservations.add(gson.fromJson(el, Lesson.class));
-
-                                }
-                                adapter.reload(vModel.reservations);
-                            }
-                        });
-
-
-                    }
-                },
-                new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(!Utility.isSessionExpired(error, view)) {
-                                    Toast.makeText(getActivity(), "Received status "+error.networkResponse.statusCode, Toast.LENGTH_SHORT).show();
-
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-        HttpClientSingleton.getInstance().addToRequestQueue(request);
+            }
+        });
     }
 }

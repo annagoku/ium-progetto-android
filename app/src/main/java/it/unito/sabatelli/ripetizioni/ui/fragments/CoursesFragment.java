@@ -21,10 +21,12 @@ import com.google.gson.JsonParser;
 
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.Utility;
+import it.unito.sabatelli.ripetizioni.api.ApiFactory;
+import it.unito.sabatelli.ripetizioni.api.RipetizioniApiManager;
 import it.unito.sabatelli.ripetizioni.httpclient.HttpClientSingleton;
 import it.unito.sabatelli.ripetizioni.httpclient.StringRequest;
-import it.unito.sabatelli.ripetizioni.model.Lesson;
-import it.unito.sabatelli.ripetizioni.ui.adapters.CatalogListViewAdapter;
+import it.unito.sabatelli.ripetizioni.model.Course;
+import it.unito.sabatelli.ripetizioni.ui.adapters.CoursesListViewAdapter;
 import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
 
 public class CoursesFragment extends Fragment {
@@ -33,7 +35,7 @@ public class CoursesFragment extends Fragment {
 
     MainViewModel vModel = null;
     ListView listView;
-    CatalogListViewAdapter adapter;
+    CoursesListViewAdapter adapter;
 
 
     public CoursesFragment() {
@@ -53,65 +55,30 @@ public class CoursesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_catalog, container, false);
-        System.out.println("HO CREATO IL LAYOUT LESSONS!!!!!!!!!!!!!!!!!");
-        listView = view.findViewById(R.id.catalog_list_view);
-        adapter = new CatalogListViewAdapter(this.getContext(), vModel.reservations);
+        view = inflater.inflate(R.layout.fragment_courses, container, false);
+        listView = view.findViewById(R.id.courses_list_view);
+        adapter = new CoursesListViewAdapter(this.getContext(), vModel.courses);
         listView.setAdapter(adapter);
 
 
-        retrieveLessons();
+        retrieveCourses();
         return view;
     }
 
 
-    private void retrieveLessons() {
-        Context ctx = this.getContext();
+    private void retrieveCourses() {
+        RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
 
-        StringRequest request = new StringRequest(
-                Request.Method.GET,
-                getString(R.string.main_server_url)+"/private/catalog", null,
-                new Response.Listener<String> () {
+        apiManager.getCourses((courseList) -> {
+            vModel.courses.clear();
+            vModel.courses.addAll(courseList);
+            adapter.reload(vModel.courses);
+        }, (error) -> {
+            if(!Utility.isSessionExpired(error, view)) {
+                Toast.makeText(getActivity(), "Received status "+error.networkResponse.statusCode, Toast.LENGTH_SHORT).show();
 
-                    @Override
-                    public void onResponse(String response) {
+            }
+        });
 
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Gson gson = new Gson();
-                                JsonArray array = new JsonParser().parse(response).getAsJsonArray();
-
-                                vModel.catalogItems.clear();
-                                for(JsonElement el : array) {
-                                    vModel.catalogItems.add(gson.fromJson(el, Lesson.class));
-
-                                }
-                                adapter.reload(vModel.catalogItems);
-                            }
-                        });
-
-
-                    }
-                },
-                new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(!Utility.isSessionExpired(error, view)) {
-                                    Toast.makeText(getActivity(), "Received status "+error.networkResponse.statusCode, Toast.LENGTH_SHORT).show();
-
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-        HttpClientSingleton.getInstance().addToRequestQueue(request);
     }
 }
