@@ -46,7 +46,7 @@ public class ChangeLessonStateDialog extends DialogFragment {
                             Toast.makeText(getActivity(), "Nessuna azione selezionata", 5 ).show();
                         }
                         else {
-                            int newStateCode = lesson.getState().getCode();
+                            int  newStateCode = lesson.getState().getCode();
                             String newStateDesc = lesson.getState().getName();
                             switch (selectedPosition) {
                                 case 0:
@@ -64,10 +64,12 @@ public class ChangeLessonStateDialog extends DialogFragment {
 
                             RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
 
+                            String finalNewStateDesc = newStateDesc;
+                            int finalNewStateCode = newStateCode;
                             apiManager.changeLessonState(lesson, newStateCode,
                                     (v)-> {
-                                        lesson.getState().setName(newStateDesc);
-                                        lesson.getState().setCode(newStateCode);
+                                        lesson.getState().setName(finalNewStateDesc);
+                                        lesson.getState().setCode(finalNewStateCode);
                                         ((BaseAdapter)((ListView)getActivity().findViewById(R.id.lessons_list_view)).getAdapter()).notifyDataSetChanged();
                                     },
                                     (error) -> {

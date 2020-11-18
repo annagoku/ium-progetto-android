@@ -235,6 +235,45 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
 
     @Override
     public void getTeachers(SuccessListener<List<Teacher>> listener, ErrorListener errorListener) {
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                activity.getString(R.string.main_server_url)+"/public/teachers?filter=home", null,
+                new Response.Listener<String> () {
+
+                    @Override
+                    public void onResponse(String response) {
+
+
+                        activity.runOnUiThread(() -> {
+                            Gson gson = new Gson();
+                            JsonArray array = new JsonParser().parse(response).getAsJsonArray();
+
+                            ArrayList<Teacher> arrayList = new ArrayList<>();
+
+                            for(JsonElement el : array) {
+                                arrayList.add(gson.fromJson(el, Teacher.class));
+
+                            }
+                            listener.onSuccess(arrayList);
+
+                        });
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        activity.runOnUiThread(() -> {
+                            errorListener.onError(error);
+
+                        });
+
+                    }
+                });
+
+        HttpClientSingleton.getInstance().addToRequestQueue(request);
 
     }
 

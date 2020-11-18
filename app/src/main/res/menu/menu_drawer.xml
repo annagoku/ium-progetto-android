@@ -16,6 +16,9 @@
         <item
             android:id="@+id/dr_action_courses"
             android:title="@string/action_courses" />
+        <item
+            android:id="@+id/dr_action_courses_teacher"
+            android:title="Insegnanti e Corsi" />
     </group>
     <group >
         <item
