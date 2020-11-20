@@ -21,4 +21,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/text_courses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="courses"
+        android:gravity="center"
+        android:paddingLeft="15dp"
+        android:text="Courses"
+        android:textAlignment="viewStart"
+        android:textColor="@color/teal_700"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_teacher_name" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

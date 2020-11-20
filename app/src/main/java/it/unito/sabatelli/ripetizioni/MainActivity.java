@@ -23,6 +23,7 @@ import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
 import it.unito.sabatelli.ripetizioni.ui.fragments.CatalogFragment;
 import it.unito.sabatelli.ripetizioni.ui.fragments.CoursesFragment;
 import it.unito.sabatelli.ripetizioni.ui.fragments.LessonsFragment;
+import it.unito.sabatelli.ripetizioni.ui.fragments.TeacherCourseFragment;
 import it.unito.sabatelli.ripetizioni.ui.fragments.TeacherFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -155,7 +156,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //Toast.makeText(this, "Insegnanti non ancora implementato", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.dr_action_courses_teacher:
-                Toast.makeText(this, " Associazione Insegnanti e corsi non ancora implementato", Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_id, new TeacherCourseFragment())
+                        .commit();
+                //Toast.makeText(this, " Associazione Insegnanti e corsi non ancora implementato", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 Toast.makeText(this, "AZIONE NON DISPONIBILE", Toast.LENGTH_SHORT).show();
