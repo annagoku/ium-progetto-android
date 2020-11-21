@@ -67,7 +67,7 @@ public class TeacherCourseExpandableListAdapter extends BaseExpandableListAdapte
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        String teacher = (String) getGroup(groupPosition);
+        //String teacher = (String) getGroup(groupPosition);
         ViewHolder holder;
 
         if (convertView == null) {
@@ -86,8 +86,8 @@ public class TeacherCourseExpandableListAdapter extends BaseExpandableListAdapte
 
         holder.text.setText(getGroup(groupPosition).toString());
 
-        ExpandableListView mExpandableListView = (ExpandableListView) parent;
-        mExpandableListView.expandGroup(groupPosition);
+      // ExpandableListView mExpandableListView = (ExpandableListView) parent;
+        //mExpandableListView.expandGroup(groupPosition);
 
 
         System.out.println("Group "+groupPosition+" -> Text: "+text);
@@ -99,7 +99,7 @@ public class TeacherCourseExpandableListAdapter extends BaseExpandableListAdapte
     @Override
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
-
+        ViewHolder holder;
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -107,17 +107,17 @@ public class TeacherCourseExpandableListAdapter extends BaseExpandableListAdapte
 
             convertView = layoutInflater.inflate(R.layout.list_item_course, parent, false);
 
-            //holder = new ViewHolder();
-            //holder.text = (TextView) convertView.findViewById(R.id.lblListItemCourse);
-            //convertView.setTag(holder);
-        } /*else {
+            holder = new ViewHolder();
+            holder.text = (TextView) convertView.findViewById(R.id.lblListItemCourse);
+            convertView.setTag(holder);
+        } else {
             holder = (ViewHolder) convertView.getTag();
-        }*/
+        }
 
         String text = getChild(groupPosition, childPosition).toString();
 
-        //holder.text.setText(text);
-        ( (TextView) convertView.findViewById(R.id.lblListItemCourse)).setText(text);
+         holder.text.setText(text);
+        //( (TextView) convertView.findViewById(R.id.lblListItemCourse)).setText(text);
 
         System.out.println("Child group "+groupPosition+" position "+childPosition+" -> Text: "+text);
         return convertView;

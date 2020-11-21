@@ -12,17 +12,11 @@ import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.Utility;
 import it.unito.sabatelli.ripetizioni.api.ApiFactory;
 import it.unito.sabatelli.ripetizioni.api.RipetizioniApiManager;
-import it.unito.sabatelli.ripetizioni.model.Course;
 import it.unito.sabatelli.ripetizioni.model.Teacher;
-import it.unito.sabatelli.ripetizioni.model.TeacherCourse;
 import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
 import it.unito.sabatelli.ripetizioni.ui.adapters.TeacherCourseExpandableListAdapter;
-import it.unito.sabatelli.ripetizioni.ui.adapters.TeachersListViewAdapter;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
@@ -32,6 +26,7 @@ import java.util.List;
 public class TeacherCourseFragment extends Fragment {
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
+    ArrayList<String> listDataHeaderTeacher=new ArrayList<>();
     HashMap<String, List<String>> listDataChildCourse=new HashMap<>();
     View view;
 
@@ -69,44 +64,48 @@ public class TeacherCourseFragment extends Fragment {
         RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
 
         apiManager.getTeachers((teacherList) -> {
-            vModel.teachers.clear();
-            vModel.teachers.addAll(teacherList);
+                    vModel.teachers.clear();
+                    vModel.teachers.addAll(teacherList);
 
-            for (Teacher t: vModel.teachers){
+                    for (Teacher t : vModel.teachers) {
 
-                //System.out.println("Provo a vedere se c'è qualcosa -->" + listDataHeaderTeacher.get(0));
-                listDataChildCourse.put(t.getFullName(),t.getCourseNameLinked());
-                vModel.teacherCourse.add(new TeacherCourse(t.getFullName(), t.getCourseNameLinked()));
-            }
+                        listDataChildCourse.put(t.getFullName(), t.getCourseTeacherLinked());
+                    }
+                    for (String key: listDataChildCourse.keySet()){
+                        if (listDataChildCourse.get(key).size()==0){
+                            listDataChildCourse.remove(key);
+                        }
+                    }
 
-            List<String> expandableListTitle = new ArrayList<String>(listDataChildCourse.keySet());
-            listAdapter = new TeacherCourseExpandableListAdapter(this.getContext(),  expandableListTitle, listDataChildCourse);
+            listDataHeaderTeacher = new ArrayList<String>(listDataChildCourse.keySet());
 
-            // setting list adapter
+
+            listAdapter = new TeacherCourseExpandableListAdapter(this.getContext(),  listDataHeaderTeacher, listDataChildCourse);
+
+
+                    // setting list adapter
             expListView.setAdapter(listAdapter);
-            expListView.setGroupIndicator(null);
-            /*for(int i=0; i<teacherList.size(); i++) {
-                expListView.expandGroup(i);
-            }*/
-            //expListView.expandGroup(0);
 
 
-            expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+
+            expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener()  {
 
                 @Override
                 public boolean onGroupClick(ExpandableListView parent, View v,
                                             int groupPosition, long id) {
                      Toast.makeText(getActivity().getApplicationContext(),
-                    "Group Clicked " + expandableListTitle.get(groupPosition),
+                    "Group Clicked " + listDataHeaderTeacher.get(groupPosition),
                      Toast.LENGTH_SHORT).show();
-                    parent.expandGroup(groupPosition);
+
+                    if (parent.isGroupExpanded(groupPosition)) {
+                        parent.collapseGroup(groupPosition);
+                    } else {
+                        parent.expandGroup(groupPosition);
+                    }
+
                     return true;
                 }
             });
-
-
-
-
 
         }, (error) -> {
             if(!Utility.isSessionExpired(error, view)) {
@@ -114,6 +113,42 @@ public class TeacherCourseFragment extends Fragment {
 
             }
         });
+
+        expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                Toast.makeText(getActivity().getApplicationContext(),
+                        listDataHeaderTeacher.get(groupPosition) + " Expanded",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Listview Group collasped listener
+        expListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                Toast.makeText(getActivity().getApplicationContext(),
+                        listDataHeaderTeacher.get(groupPosition) + " Collapsed",
+                        Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                Toast.makeText(getActivity().getApplicationContext(),
+                        "Group Clicked " + listDataChildCourse.get(groupPosition),
+                        Toast.LENGTH_SHORT).show();
+
+                return true;
+            }
+        });
+
 
     }
 

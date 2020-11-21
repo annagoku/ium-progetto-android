@@ -4,7 +4,7 @@
     android:id="@+id/nav_header_layout"
     android:layout_width="match_parent"
     android:layout_height="160dp"
-    android:background="@color/primary"
+    android:background="@color/teal_700"
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="16dp">

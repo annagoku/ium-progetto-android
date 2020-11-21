@@ -8,14 +8,14 @@ public class Teacher implements Serializable {
     String name;
     String surname;
     ArrayList<Course> courseTeached= new ArrayList<>();
-    ArrayList<String> courseNameLinked= new ArrayList<>();
+    ArrayList<String> courseTeacherLinked= new ArrayList<>();
 
-    public ArrayList<String> getCourseNameLinked() {
-        ArrayList<String> array = new ArrayList<>();
+    public ArrayList<String> getCourseTeacherLinked() {
+
         for(Course c: courseTeached) {
-            array.add(c.getName());
+            courseTeacherLinked.add(c.getName());
         }
-        return array;
+        return courseTeacherLinked;
     }
 
 

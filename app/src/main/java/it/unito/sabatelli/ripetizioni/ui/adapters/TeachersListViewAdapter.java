@@ -65,7 +65,7 @@ public class TeachersListViewAdapter extends BaseAdapter {
         //System.out.println("Creating view for lesson "+l);
         ((TextView) convertView.findViewById(R.id.text_teacher_name)).setText(t.getFullName());
 
-        StringBuffer buffer = new StringBuffer();
+        /*StringBuffer buffer = new StringBuffer();
         if(t.getCourseTeached() != null && !t.getCourseTeached().isEmpty())
             for(int i=0; i<t.getCourseTeached().size(); i++) {
                 buffer.append(t.getCourseTeached().get(i).getName());
@@ -77,7 +77,7 @@ public class TeachersListViewAdapter extends BaseAdapter {
             buffer.append("Nessun corso");
         }
 
-        ((TextView) convertView.findViewById(R.id.text_courses)).setText(buffer.toString());
+        ((TextView) convertView.findViewById(R.id.text_courses)).setText(buffer.toString());*/
 
 
         return convertView;

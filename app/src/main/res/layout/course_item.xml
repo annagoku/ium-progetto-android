@@ -10,7 +10,7 @@
     <TextView
         android:id="@+id/text_course_name"
         android:layout_width="240dp"
-        android:layout_height="37dp"
+        android:layout_height="100dp"
         android:contentDescription="coursename"
         android:gravity="center"
         android:paddingLeft="15dp"
