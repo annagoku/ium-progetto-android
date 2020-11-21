@@ -1,14 +1,22 @@
 package it.unito.sabatelli.ripetizioni.ui.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -19,6 +27,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+
+import java.util.ArrayList;
 
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.Utility;
@@ -35,6 +45,8 @@ public class CatalogFragment extends Fragment {
     MainViewModel vModel = null;
     ListView listView;
     CatalogListViewAdapter adapter;
+    SearchView courseFilter;
+    ArrayAdapter <String> arrayAdapter;
 
 
     public CatalogFragment() {
@@ -57,13 +69,57 @@ public class CatalogFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_catalog, container, false);
         System.out.println("HO CREATO IL LAYOUT LESSONS!!!!!!!!!!!!!!!!!");
         listView = view.findViewById(R.id.catalog_list_view);
+        listView.setTextFilterEnabled(true);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+                hideKeyboard(getContext());
+            }
+        });
+
+        courseFilter=(SearchView) view.findViewById(R.id.searchCourseFilter);
+
+
         adapter = new CatalogListViewAdapter(this.getContext(), vModel.reservations);
         listView.setAdapter(adapter);
+
+        courseFilter.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.getFilter().filter(query);
+                adapter.notifyDataSetChanged();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                adapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
 
 
         retrieveLessons();
         return view;
     }
+
+    public static void hideKeyboard( Context context ) {
+
+        try {
+            InputMethodManager inputManager = ( InputMethodManager ) context.getSystemService( Context.INPUT_METHOD_SERVICE );
+
+            View view = ( (Activity) context ).getCurrentFocus();
+            if ( view != null ) {
+                inputManager.hideSoftInputFromWindow( view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS );
+            }
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     private void retrieveLessons() {
@@ -115,4 +171,6 @@ public class CatalogFragment extends Fragment {
 
         HttpClientSingleton.getInstance().addToRequestQueue(request);
     }
+
+
 }

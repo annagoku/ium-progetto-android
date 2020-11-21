@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -13,37 +15,44 @@ import java.util.List;
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.model.Lesson;
 
-public class CatalogListViewAdapter extends BaseAdapter {
+public class CatalogListViewAdapter extends BaseAdapter implements Filterable {
     Context context;
-    ArrayList<Lesson> arrayList = new ArrayList<>();
+    ArrayList<Lesson> originalList = new ArrayList<>();
+    private ValueFilter valueFilter;
+    private ArrayList<Lesson> lessonFilterList=new ArrayList<>();
+
+
+
+
 
     public CatalogListViewAdapter(Context ctx, ArrayList<Lesson> list) {
-        this.arrayList.addAll(list);
+        this.originalList.addAll(list);
+        this.lessonFilterList.addAll(list);
+
         this.context = ctx;
     }
 
     public void reload(List<Lesson> data) {
-        this.arrayList.clear();
-        this.arrayList.addAll(data);
+        this.originalList.clear();
+        this.originalList.addAll(data);
+        this.lessonFilterList.clear();
+        this.lessonFilterList.addAll(data);
         this.notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return arrayList.size();
+        return lessonFilterList.size();
     }
 
     @Override
     public Object getItem(int position) {
-
-
-
-        return arrayList.get(position);
+        return lessonFilterList.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return arrayList.get(position).getId();
+        return lessonFilterList.get(position).getId();
     }
 
     @Override
@@ -62,5 +71,40 @@ public class CatalogListViewAdapter extends BaseAdapter {
         ((TextView) convertView.findViewById(R.id.text_lesson_item_teacher)).setText(l.getTeacher().getFullName());
 
         return convertView;
+    }
+
+    @Override
+    public Filter getFilter() {
+        if(valueFilter==null) {
+
+            valueFilter=new ValueFilter();
+        }
+        return valueFilter;
+    }
+    private class ValueFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results=new FilterResults();
+                if (constraint == null || constraint.length() == 0) {
+                    //no constraint given, just return all the data. (no search)
+                    results.count = originalList.size();
+                    results.values = originalList;
+                } else {//do the search
+                    List<Lesson> resultsData = new ArrayList<>();
+                    String searchStr = constraint.toString().toUpperCase();
+                    for (Lesson o : originalList)
+                        if (o.getCourse().getName().toUpperCase().startsWith(searchStr)) resultsData.add(o);
+                    results.count = resultsData.size();
+                    results.values = resultsData;
+                }
+                return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            lessonFilterList=(ArrayList<Lesson>) results.values;
+            notifyDataSetChanged();
+
+        }
     }
 }
