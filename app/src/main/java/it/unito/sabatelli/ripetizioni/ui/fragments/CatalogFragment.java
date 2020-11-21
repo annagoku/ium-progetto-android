@@ -75,6 +75,13 @@ public class CatalogFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
                 hideKeyboard(getContext());
+
+                Lesson lesson = (Lesson) parent.getAdapter().getItem(position);
+
+
+                    NewReservationDialog dialog = new NewReservationDialog(lesson);
+                    dialog.show(getActivity().getSupportFragmentManager(), "NewReservationDialog");
+
             }
         });
 
