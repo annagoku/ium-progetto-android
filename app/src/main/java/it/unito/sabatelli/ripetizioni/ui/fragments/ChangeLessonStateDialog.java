@@ -1,5 +1,6 @@
 package it.unito.sabatelli.ripetizioni.ui.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -42,8 +43,9 @@ public class ChangeLessonStateDialog extends DialogFragment {
                         int selectedPosition = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
                         System.out.println("ChangeLessonState -> Ho cliccato "+items[selectedPosition]);
 
+                        Activity act = getActivity();
                         if(selectedPosition == -1) {
-                            Toast.makeText(getActivity(), "Nessuna azione selezionata", 5 ).show();
+                            Toast.makeText(getActivity(), "Nessuna azione selezionata",Toast.LENGTH_LONG ).show();
                         }
                         else {
                             int  newStateCode = lesson.getState().getCode();
@@ -66,13 +68,16 @@ public class ChangeLessonStateDialog extends DialogFragment {
 
                             String finalNewStateDesc = newStateDesc;
                             int finalNewStateCode = newStateCode;
-                            apiManager.changeLessonState(lesson, newStateCode,
+                            String action ="modificastato";
+                            apiManager.changeLessonState(lesson, action, newStateCode,
                                     (v)-> {
                                         lesson.getState().setName(finalNewStateDesc);
                                         lesson.getState().setCode(finalNewStateCode);
-                                        ((BaseAdapter)((ListView)getActivity().findViewById(R.id.lessons_list_view)).getAdapter()).notifyDataSetChanged();
+                                        ((BaseAdapter)((ListView)act.findViewById(R.id.lessons_list_view)).getAdapter()).notifyDataSetChanged();
+                                        Toast.makeText(act, "Modifica effettuata con successo ", Toast.LENGTH_SHORT).show();
                                     },
                                     (error) -> {
+                                        Toast.makeText(act, "Errore nel salvataggio ", Toast.LENGTH_SHORT).show();
 
                                     });
 

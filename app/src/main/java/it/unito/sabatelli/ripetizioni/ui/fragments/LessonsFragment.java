@@ -69,6 +69,7 @@ public class LessonsFragment extends Fragment {
 
                 if(lesson.getState().getCode() == 1) { // se è prenotata
                     ChangeLessonStateDialog dialog = new ChangeLessonStateDialog(lesson);
+
                     dialog.show(getActivity().getSupportFragmentManager(), "ChangeLessonStateDialog");
                 }
 

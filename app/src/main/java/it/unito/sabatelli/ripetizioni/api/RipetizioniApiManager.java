@@ -17,6 +17,6 @@ public interface  RipetizioniApiManager {
     public void getCatalog(SuccessListener<List<Lesson>> listener, ErrorListener errorListener);
     public void getCourses(SuccessListener<List<Course>> listener, ErrorListener errorListener);
     public void getTeachers(SuccessListener<List<Teacher>> listener, ErrorListener errorListener);
-    public void changeLessonState(Lesson lesson, int newStateCode, SuccessListener<Void> listener, ErrorListener errorListener);
+    public void changeLessonState(Lesson lesson, String action, int newStateCode, SuccessListener<Void> listener, ErrorListener errorListener);
 
 }

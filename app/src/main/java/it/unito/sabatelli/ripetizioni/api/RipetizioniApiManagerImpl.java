@@ -278,15 +278,16 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     }
 
     @Override
-    public void changeLessonState(Lesson lesson, int newStateCode, SuccessListener<Void> listener, ErrorListener errorListener) {
-        //TODO controllare path
-        GsonRequest req = new GsonRequest(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/changelessonstate", GenericResponse.class, null,
+    public void changeLessonState(Lesson lesson, String action, int newStateCode, SuccessListener<Void> listener, ErrorListener errorListener) {
+
+        GsonRequest req = new GsonRequest(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/lessons", GenericResponse.class, null,
                 new Response.Listener<GenericResponse>() {
                     @Override
                     public void onResponse(GenericResponse response) {
                         System.out.println("Response "+response);
                         activity.runOnUiThread(() -> {
                             listener.onSuccess(null);
+
                         });
 
                     }
@@ -299,8 +300,9 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
-                params.put("lessonId", ""+lesson.getId());
-                params.put("state", ""+newStateCode);
+                params.put("idLesson", ""+lesson.getId());
+                params.put("stateLesson", ""+newStateCode);
+                params.put("action", action);
 
                 return params;
             }
