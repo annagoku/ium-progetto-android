@@ -1,26 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group >
+    <group android:id="@+id/grp1" android:checkableBehavior="single" >
         <item
             android:id="@+id/dr_action_lessons"
-            android:icon="@android:drawable/ic_menu_today"
+            android:icon="@drawable/ic_calendar_check"
+            android:divider="#FF0D0129"
+            android:dividerHeight= "2dp"
             android:title="@string/action_home" />
+    </group>
+    <group android:id="@+id/grp2" android:checkableBehavior="single">
         <item
             android:id="@+id/dr_action_catalog"
-            android:icon="?attr/actionModePasteDrawable"
+            android:icon="@drawable/ic_calendar_alt"
+            android:divider="#FF0D0129"
+            android:dividerHeight= "2dp"
             android:title="@string/action_catalog" />
+    </group>
+    <group android:id="@+id/grp3" android:checkableBehavior="single">
         <item
             android:id="@+id/dr_action_teachers"
+            android:divider="#FF0D0129"
+            android:dividerHeight="2dp"
+            android:icon="@drawable/ic_users"
             android:title="@string/action_teachers" />
+    </group>
+    <group android:id="@+id/grp4" android:checkableBehavior="single">
         <item
             android:id="@+id/dr_action_courses"
+            android:icon="@drawable/ic_book_open"
+            android:divider="#FF0D0129"
+            android:dividerHeight= "2dp"
             android:title="@string/action_courses" />
+    </group>
+
+    <group android:id="@+id/grp5" android:checkableBehavior="single">
         <item
             android:id="@+id/dr_action_courses_teacher"
+            android:icon="@drawable/ic_chalkboard_teacher"
+
+            android:divider="#FF0D0129"
+            android:dividerHeight= "2dp"
             android:title="Insegnanti e Corsi" />
     </group>
-    <group >
+
+    <group>
         <item
             android:id="@+id/dr_action_logout"
             android:icon="@android:drawable/ic_lock_power_off"

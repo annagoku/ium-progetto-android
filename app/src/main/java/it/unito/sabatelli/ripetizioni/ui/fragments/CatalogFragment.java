@@ -71,10 +71,14 @@ public class CatalogFragment extends Fragment {
         listView = view.findViewById(R.id.catalog_list_view);
         listView.setTextFilterEnabled(true);
 
+
+
+
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
-                hideKeyboard(getContext());
+                Utility.hideKeyboard(getContext());
 
                 Lesson lesson = (Lesson) parent.getAdapter().getItem(position);
 
@@ -86,6 +90,17 @@ public class CatalogFragment extends Fragment {
         });
 
         courseFilter=(SearchView) view.findViewById(R.id.searchCourseFilter);
+
+        courseFilter.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    Utility.hideKeyboard(getContext());
+                }
+            }
+        });
+
+
 
 
         adapter = new CatalogListViewAdapter(this.getContext(), vModel.reservations);
@@ -109,23 +124,13 @@ public class CatalogFragment extends Fragment {
 
 
 
+
+
         retrieveLessons();
         return view;
     }
 
-    public static void hideKeyboard( Context context ) {
 
-        try {
-            InputMethodManager inputManager = ( InputMethodManager ) context.getSystemService( Context.INPUT_METHOD_SERVICE );
-
-            View view = ( (Activity) context ).getCurrentFocus();
-            if ( view != null ) {
-                inputManager.hideSoftInputFromWindow( view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS );
-            }
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }
 
 
 

@@ -2,7 +2,7 @@
     <string name="app_name">Ripetizioni</string>
     <string name="action_logout">Logout</string>
     <string name="action_login">Login</string>
-    <string name="action_home">Prenotazioni</string>
+    <string name="action_home">Lezioni prenotate</string>
     <string name="action_catalog">Lezioni Disponibili</string>
     <string name="action_teachers">Elenco Insegnanti</string>
     <string name="action_courses">Elenco Corsi</string>
