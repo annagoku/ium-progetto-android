@@ -32,6 +32,8 @@ import java.util.ArrayList;
 
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.Utility;
+import it.unito.sabatelli.ripetizioni.api.ApiFactory;
+import it.unito.sabatelli.ripetizioni.api.RipetizioniApiManager;
 import it.unito.sabatelli.ripetizioni.httpclient.HttpClientSingleton;
 import it.unito.sabatelli.ripetizioni.httpclient.StringRequest;
 import it.unito.sabatelli.ripetizioni.model.Lesson;
@@ -72,7 +74,7 @@ public class CatalogFragment extends Fragment {
         listView.setTextFilterEnabled(true);
 
 
-
+        CatalogFragment fragment = this;
 
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -83,7 +85,7 @@ public class CatalogFragment extends Fragment {
                 Lesson lesson = (Lesson) parent.getAdapter().getItem(position);
 
 
-                    NewReservationDialog dialog = new NewReservationDialog(lesson);
+                    NewReservationDialog dialog = new NewReservationDialog(lesson, fragment);
                     dialog.show(getActivity().getSupportFragmentManager(), "NewReservationDialog");
 
             }
@@ -130,59 +132,21 @@ public class CatalogFragment extends Fragment {
         return view;
     }
 
-
-
-
-
-    private void retrieveLessons() {
+    protected void retrieveLessons() {
         Context ctx = this.getContext();
 
-        StringRequest request = new StringRequest(
-                Request.Method.GET,
-                getString(R.string.main_server_url)+"/private/catalog", null,
-                new Response.Listener<String> () {
-
-                    @Override
-                    public void onResponse(String response) {
+        RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
+        Activity act = getActivity();
 
 
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Gson gson = new Gson();
-                                JsonArray array = new JsonParser().parse(response).getAsJsonArray();
+        apiManager.getCatalog((list) -> {
+            vModel.catalogItems.clear();
+            vModel.catalogItems.addAll(list);
+            adapter.reload(vModel.catalogItems);
+        }, (error) -> {
+            Toast.makeText(act, "Errore nel caricamento delle lezioni disponibili", Toast.LENGTH_SHORT).show();
+        });
 
-                                vModel.catalogItems.clear();
-                                for(JsonElement el : array) {
-                                    vModel.catalogItems.add(gson.fromJson(el, Lesson.class));
-
-                                }
-                                adapter.reload(vModel.catalogItems);
-                            }
-                        });
-
-
-                    }
-                },
-                new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(!Utility.isSessionExpired(error, view)) {
-                                    Toast.makeText(getActivity(), "Received status "+error.networkResponse.statusCode, Toast.LENGTH_SHORT).show();
-
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-        HttpClientSingleton.getInstance().addToRequestQueue(request);
     }
-
 
 }

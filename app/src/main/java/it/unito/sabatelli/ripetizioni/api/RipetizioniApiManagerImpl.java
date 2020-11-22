@@ -7,6 +7,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -22,6 +23,7 @@ import it.unito.sabatelli.ripetizioni.Utility;
 import it.unito.sabatelli.ripetizioni.httpclient.GsonRequest;
 import it.unito.sabatelli.ripetizioni.httpclient.HttpClientSingleton;
 import it.unito.sabatelli.ripetizioni.httpclient.StringRequest;
+import it.unito.sabatelli.ripetizioni.model.CatalogItem;
 import it.unito.sabatelli.ripetizioni.model.Course;
 import it.unito.sabatelli.ripetizioni.model.GenericResponse;
 import it.unito.sabatelli.ripetizioni.model.Lesson;
@@ -146,6 +148,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
 
     @Override
     public void getCatalog(SuccessListener<List<Lesson>> listener, ErrorListener errorListener) {
+
         StringRequest request = new StringRequest(
                 Request.Method.GET,
                 activity.getString(R.string.main_server_url)+"/private/catalog", null,
@@ -308,6 +311,59 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
             }
         };
         HttpClientSingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(req);
+    }
+
+    @Override
+    public void saveNewReservation(Lesson lesson, SuccessListener<User> listener, ErrorListener errorListener) {
+
+
+        GsonRequest req = new GsonRequest(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/newreservation", GenericResponse.class, null,
+                new Response.Listener<GenericResponse>() {
+                    @Override
+                    public void onResponse(GenericResponse response) {
+                        System.out.println("Response "+response);
+                        activity.runOnUiThread(() -> {
+                            listener.onSuccess(null);
+
+                        });
+
+                    }
+                },
+                (error) -> {
+                    String errorMessage = "Si è verificato un errore";
+                    if(error.networkResponse.statusCode >= 400 && error.networkResponse.statusCode < 500) {
+
+                        try {
+                            String json = new String(
+                                    error.networkResponse.data,
+                                    HttpHeaderParser.parseCharset(error.networkResponse.headers));
+
+                            GenericResponse gr = new Gson().fromJson(json, GenericResponse.class);
+                            errorMessage = gr.getErrorOccurred();
+
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                    VolleyError newError = new VolleyError(errorMessage);
+
+                    activity.runOnUiThread(() -> {
+                        errorListener.onError(newError);
+                    });
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<>();
+                params.put("infoCatalogItemSelected", new Gson().toJson(new CatalogItem(lesson)));
+                params.put("checkFirst", "true");
+                return params;
+            }
+        };
+        HttpClientSingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(req);
+
     }
 
     public Activity getActivity() {

@@ -1,5 +1,6 @@
 package it.unito.sabatelli.ripetizioni.ui.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -18,17 +19,18 @@ import it.unito.sabatelli.ripetizioni.ui.adapters.LessonListViewAdapter;
 
 public class NewReservationDialog extends DialogFragment {
     Lesson lesson;
+    CatalogFragment fragment;
 
-
-    public NewReservationDialog(Lesson l) {
+    public NewReservationDialog(Lesson l, CatalogFragment fragment) {
         this.lesson = l;
+        this.fragment = fragment;
     }
 
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-
+        Activity act = getActivity();
 
 
         // Use the Builder class for convenient dialog construction
@@ -42,8 +44,16 @@ public class NewReservationDialog extends DialogFragment {
 
 
                         RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
+                        apiManager.saveNewReservation(lesson,
+                                (gr) -> {
+                                     Toast.makeText(act, "Prenotazione salvata correttamente", Toast.LENGTH_SHORT).show();
+                                     fragment.retrieveLessons();
+                                },
+                                (error) -> {
+                                    Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
 
-                       //TODO implementare post
+
                 }
 
         })

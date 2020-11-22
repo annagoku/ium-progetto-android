@@ -3,16 +3,16 @@ package it.unito.sabatelli.ripetizioni.model;
 import java.io.Serializable;
 
 public class Slot implements Serializable {
-    int code;
+    int id;
     String startHour;
     String endHour;
 
-    public int getCode() {
-        return code;
+    public int getId() {
+        return id;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public void setId(int code) {
+        this.id = code;
     }
 
     public String getStartHour() {

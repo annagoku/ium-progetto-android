@@ -18,5 +18,5 @@ public interface  RipetizioniApiManager {
     public void getCourses(SuccessListener<List<Course>> listener, ErrorListener errorListener);
     public void getTeachers(SuccessListener<List<Teacher>> listener, ErrorListener errorListener);
     public void changeLessonState(Lesson lesson, String action, int newStateCode, SuccessListener<Void> listener, ErrorListener errorListener);
-
+    public void saveNewReservation(Lesson lesson, SuccessListener<User> listener, ErrorListener errorListener);
 }
