@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.unito.sabatelli.ripetizioni.AbstractActivity;
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.Utility;
 import it.unito.sabatelli.ripetizioni.httpclient.GsonRequest;
@@ -27,18 +28,54 @@ import it.unito.sabatelli.ripetizioni.model.CatalogItem;
 import it.unito.sabatelli.ripetizioni.model.Course;
 import it.unito.sabatelli.ripetizioni.model.GenericResponse;
 import it.unito.sabatelli.ripetizioni.model.Lesson;
+import it.unito.sabatelli.ripetizioni.model.SessionInfoResponse;
 import it.unito.sabatelli.ripetizioni.model.Teacher;
 import it.unito.sabatelli.ripetizioni.model.User;
 
 public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
 
-    private final Activity activity;
+    private final AbstractActivity activity;
+    private final HttpClientSingleton client;
 
-    public RipetizioniApiManagerImpl(Activity activity) {
+    public RipetizioniApiManagerImpl(AbstractActivity activity) {
         this.activity = activity;
-        HttpClientSingleton.getInstance(activity.getApplicationContext());
+        this.client = HttpClientSingleton.getInstance(activity.getApplicationContext());
     }
 
+    private VolleyError checkServerError (VolleyError error) {
+        String errorMessage = "Si è verificato un errore";
+        if(error.networkResponse != null) {
+            if(error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 403) {
+                System.err.println("Ricevuto status "+error.networkResponse.statusCode+" forzo il logout utente");
+                client.invalidateSession();
+                activity.forceClientLogout("Sessione scaduta o problemi con autorizzazione. Rieffettuare login");
+                return error;
+            }
+            else {
+                // controllo se è possibile che la risposta sia una generic response
+                // in quel caso contiene il messaggio di errore da far comparire
+                String contentType = error.networkResponse.headers.get("Content-Type");
+
+                if("application/json".equalsIgnoreCase(contentType)) {
+                    try {
+                        String json = new String(
+                                error.networkResponse.data,
+                                HttpHeaderParser.parseCharset(error.networkResponse.headers));
+                        GenericResponse gr = new Gson().fromJson(json, GenericResponse.class);
+                        errorMessage = gr.getErrorOccurred();
+
+                    }
+                    catch (Exception e) {
+                        System.out.println("L'errore server non è in formato GenericResponse");
+                    }
+                }
+                return new VolleyError(errorMessage);
+            }
+        }
+        else {
+            return error;
+        }
+    }
 
     @Override
     public void login(String username, String password, SuccessListener<Void> listener, ErrorListener errorListener) {
@@ -56,8 +93,9 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                     }
                 },
                 (error) -> {
+
                     activity.runOnUiThread(() -> {
-                        errorListener.onError(error);
+                        errorListener.onError(checkServerError(error));
                     });
         }) {
             @Override
@@ -69,35 +107,44 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                 return params;
             }
         };
-        HttpClientSingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(loginRequest);
+        this.client.addToRequestQueue(loginRequest);
     }
 
     @Override
     public void logout(SuccessListener<Void> listener, ErrorListener errorListener) {
-
+        GsonRequest<GenericResponse> request = new GsonRequest<GenericResponse>(Request.Method.GET,
+                activity.getString(R.string.main_server_url)+"/private/logout",
+                GenericResponse.class,
+                null, (response) -> {
+            activity.runOnUiThread(() -> {
+                listener.onSuccess(null);
+            });
+        },(error) -> {
+            activity.runOnUiThread(() -> {
+                errorListener.onError(checkServerError(error));
+            });
+        });
+        this.client.addToRequestQueue(request);
     }
 
     @Override
-    public void getUserInfo(SuccessListener<User> listener, ErrorListener errorListener) {
+    public void getUserInfo(SuccessListener<SessionInfoResponse> listener, ErrorListener errorListener) {
 
-        GsonRequest<User> request = new GsonRequest<User>(Request.Method.GET,
+        GsonRequest<SessionInfoResponse> request = new GsonRequest<SessionInfoResponse>(Request.Method.GET,
                 activity.getString(R.string.main_server_url)+"/private/userlog",
-                User.class,
-                null, new Response.Listener<User>() {
-            @Override
-            public void onResponse(User response) {
+                SessionInfoResponse.class,
+                null, (response) -> {
                 System.out.println("Ricevute info utente -> "+response);
                 activity.runOnUiThread(() -> {
                     listener.onSuccess(response);
                 });
-
-            }
         },(error) -> {
+
             activity.runOnUiThread(() -> {
-                errorListener.onError(error);
+                errorListener.onError(checkServerError(error));
             });
         });
-        HttpClientSingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(request);
+        this.client.addToRequestQueue(request);
     }
 
     @Override
@@ -136,14 +183,14 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                errorListener.onError(error);
+                                errorListener.onError(checkServerError(error));
                             }
                         });
 
                     }
                 });
 
-        HttpClientSingleton.getInstance().addToRequestQueue(request);
+        this.client.addToRequestQueue(request);
     }
 
     @Override
@@ -183,14 +230,14 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                errorListener.onError(error);
+                                errorListener.onError(checkServerError(error));
                             }
                         });
 
                     }
                 });
 
-        HttpClientSingleton.getInstance().addToRequestQueue(request);
+        this.client.addToRequestQueue(request);
     }
 
     @Override
@@ -226,14 +273,14 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         activity.runOnUiThread(() -> {
-                            errorListener.onError(error);
+                            errorListener.onError(checkServerError(error));
 
                         });
 
                     }
                 });
 
-        HttpClientSingleton.getInstance().addToRequestQueue(request);
+        this.client.addToRequestQueue(request);
     }
 
     @Override
@@ -269,14 +316,14 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         activity.runOnUiThread(() -> {
-                            errorListener.onError(error);
+                            errorListener.onError(checkServerError(error));
 
                         });
 
                     }
                 });
 
-        HttpClientSingleton.getInstance().addToRequestQueue(request);
+        this.client.addToRequestQueue(request);
 
     }
 
@@ -297,7 +344,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                 },
                 (error) -> {
                     activity.runOnUiThread(() -> {
-                        errorListener.onError(error);
+                        errorListener.onError(checkServerError(error));
                     });
                 }) {
             @Override
@@ -310,7 +357,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                 return params;
             }
         };
-        HttpClientSingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(req);
+        this.client.addToRequestQueue(req);
     }
 
     @Override
@@ -330,28 +377,8 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                     }
                 },
                 (error) -> {
-                    String errorMessage = "Si è verificato un errore";
-                    if(error.networkResponse.statusCode >= 400 && error.networkResponse.statusCode < 500) {
-
-                        try {
-                            String json = new String(
-                                    error.networkResponse.data,
-                                    HttpHeaderParser.parseCharset(error.networkResponse.headers));
-
-                            GenericResponse gr = new Gson().fromJson(json, GenericResponse.class);
-                            errorMessage = gr.getErrorOccurred();
-
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-
-                    }
-                    VolleyError newError = new VolleyError(errorMessage);
-
                     activity.runOnUiThread(() -> {
-                        errorListener.onError(newError);
+                        errorListener.onError(checkServerError(error));
                     });
                 }) {
             @Override
@@ -362,7 +389,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                 return params;
             }
         };
-        HttpClientSingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(req);
+        this.client.addToRequestQueue(req);
 
     }
 

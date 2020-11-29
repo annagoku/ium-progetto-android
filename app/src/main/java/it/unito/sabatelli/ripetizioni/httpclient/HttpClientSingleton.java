@@ -60,6 +60,12 @@ public class HttpClientSingleton {
         getRequestQueue().add(req);
     }
 
+    public void invalidateSession() {
+        SharedPreferences.Editor prefEditor = _preferences.edit();
+        prefEditor.remove(SESSION_COOKIE);
+        prefEditor.commit();
+    }
+
     /**
      * Checks the response headers for session cookie and saves it
      * if it finds it.

@@ -19,6 +19,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import it.unito.sabatelli.ripetizioni.AbstractFragment;
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.Utility;
 import it.unito.sabatelli.ripetizioni.api.ApiFactory;
@@ -29,11 +30,10 @@ import it.unito.sabatelli.ripetizioni.model.Course;
 import it.unito.sabatelli.ripetizioni.ui.adapters.CoursesListViewAdapter;
 import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
 
-public class CoursesFragment extends Fragment {
+public class CoursesFragment extends AbstractFragment {
 
     View view;
 
-    MainViewModel vModel = null;
     ListView listView;
     CoursesListViewAdapter adapter;
 
@@ -47,7 +47,6 @@ public class CoursesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
     }
 
@@ -67,7 +66,6 @@ public class CoursesFragment extends Fragment {
 
 
     private void retrieveCourses() {
-        RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
 
         apiManager.getCourses((courseList) -> {
             vModel.courses.clear();

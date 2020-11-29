@@ -8,6 +8,7 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import it.unito.sabatelli.ripetizioni.AbstractFragment;
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.Utility;
 import it.unito.sabatelli.ripetizioni.api.ApiFactory;
@@ -23,14 +24,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TeacherCourseFragment extends Fragment {
+public class TeacherCourseFragment extends AbstractFragment {
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
     ArrayList<String> listDataHeaderTeacher=new ArrayList<>();
     HashMap<String, List<String>> listDataChildCourse=new HashMap<>();
     View view;
 
-    MainViewModel vModel = null;
 
 
     public TeacherCourseFragment(){
@@ -41,7 +41,6 @@ public class TeacherCourseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
     }
     @Override
@@ -61,7 +60,6 @@ public class TeacherCourseFragment extends Fragment {
     }
 
     private void retrieveTeacherCourse() {
-        RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
 
         apiManager.getTeachers((teacherList) -> {
                     vModel.teachers.clear();

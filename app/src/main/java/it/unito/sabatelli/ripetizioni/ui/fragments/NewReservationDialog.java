@@ -11,13 +11,15 @@ import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
+import it.unito.sabatelli.ripetizioni.AbstractDialogFragment;
+import it.unito.sabatelli.ripetizioni.AbstractFragment;
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.api.ApiFactory;
 import it.unito.sabatelli.ripetizioni.api.RipetizioniApiManager;
 import it.unito.sabatelli.ripetizioni.model.Lesson;
 import it.unito.sabatelli.ripetizioni.ui.adapters.LessonListViewAdapter;
 
-public class NewReservationDialog extends DialogFragment {
+public class NewReservationDialog extends AbstractDialogFragment {
     Lesson lesson;
     CatalogFragment fragment;
 
@@ -41,10 +43,7 @@ public class NewReservationDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
 
-
-
-                        RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
-                        apiManager.saveNewReservation(lesson,
+                         apiManager.saveNewReservation(lesson,
                                 (gr) -> {
                                      Toast.makeText(act, "Prenotazione salvata correttamente", Toast.LENGTH_SHORT).show();
                                      fragment.retrieveLessons();

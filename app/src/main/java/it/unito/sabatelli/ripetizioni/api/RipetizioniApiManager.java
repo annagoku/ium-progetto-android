@@ -6,13 +6,14 @@ import java.util.List;
 
 import it.unito.sabatelli.ripetizioni.model.Course;
 import it.unito.sabatelli.ripetizioni.model.Lesson;
+import it.unito.sabatelli.ripetizioni.model.SessionInfoResponse;
 import it.unito.sabatelli.ripetizioni.model.Teacher;
 import it.unito.sabatelli.ripetizioni.model.User;
 
 public interface  RipetizioniApiManager {
     public void login(String username, String password, SuccessListener<Void> listener, ErrorListener errorListener);
     public void logout(SuccessListener<Void> listener, ErrorListener errorListener);
-    public void getUserInfo(SuccessListener<User> listener, ErrorListener errorListener);
+    public void getUserInfo(SuccessListener<SessionInfoResponse> listener, ErrorListener errorListener);
     public void getReservations(SuccessListener<List<Lesson>> listener, ErrorListener errorListener);
     public void getCatalog(SuccessListener<List<Lesson>> listener, ErrorListener errorListener);
     public void getCourses(SuccessListener<List<Course>> listener, ErrorListener errorListener);

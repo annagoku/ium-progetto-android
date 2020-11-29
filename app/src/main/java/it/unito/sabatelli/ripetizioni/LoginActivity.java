@@ -101,15 +101,16 @@ public class LoginActivity extends AbstractActivity {
         errorView.setText(null);
         errorView.setVisibility(View.INVISIBLE);
 
-        apiManager.getUserInfo((user) -> {
-            if(user == null) {
+        apiManager.getUserInfo((info) -> {
+            if(info.getUser() == null) {
                 errorView.setText("Errore nel reperire le informazioni utente");
                 errorView.setVisibility(View.VISIBLE);
                 progress.setVisibility(View.GONE);
 
             }
             else {
-                intent.putExtra("USER", user);
+                intent.putExtra("USER", info.getUser());
+                intent.putExtra("SESSIONID", info.getSessionId());
                 progress.setVisibility(View.GONE);
                 startActivity(intent);
                 finish();

@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import it.unito.sabatelli.ripetizioni.AbstractFragment;
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.Utility;
 import it.unito.sabatelli.ripetizioni.api.ApiFactory;
@@ -19,10 +20,9 @@ import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
 import it.unito.sabatelli.ripetizioni.ui.adapters.CoursesListViewAdapter;
 import it.unito.sabatelli.ripetizioni.ui.adapters.TeachersListViewAdapter;
 
-public class TeacherFragment extends Fragment {
+public class TeacherFragment extends AbstractFragment {
     View view;
 
-    MainViewModel vModel = null;
     ListView listView;
     TeachersListViewAdapter adapter;
 
@@ -36,7 +36,6 @@ public class TeacherFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
     }
 
@@ -56,7 +55,6 @@ public class TeacherFragment extends Fragment {
 
 
     private void retrieveTeacher() {
-        RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
 
         apiManager.getTeachers((teacherList) -> {
             vModel.teachers.clear();

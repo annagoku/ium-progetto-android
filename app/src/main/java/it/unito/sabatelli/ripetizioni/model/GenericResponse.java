@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class GenericResponse implements Serializable {
     boolean result = false;
     String errorOccurred;
+    String sessionId;
 
     public boolean isResult() {
         return result;
@@ -20,5 +21,13 @@ public class GenericResponse implements Serializable {
 
     public void setErrorOccurred(String errorOccurred) {
         this.errorOccurred = errorOccurred;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }

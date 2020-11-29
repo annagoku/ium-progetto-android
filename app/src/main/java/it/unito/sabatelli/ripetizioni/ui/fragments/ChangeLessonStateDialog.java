@@ -11,13 +11,14 @@ import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
+import it.unito.sabatelli.ripetizioni.AbstractDialogFragment;
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.api.ApiFactory;
 import it.unito.sabatelli.ripetizioni.api.RipetizioniApiManager;
 import it.unito.sabatelli.ripetizioni.model.Lesson;
 import it.unito.sabatelli.ripetizioni.ui.adapters.LessonListViewAdapter;
 
-public class ChangeLessonStateDialog extends DialogFragment {
+public class ChangeLessonStateDialog extends AbstractDialogFragment {
     Lesson lesson;
 
 
@@ -64,7 +65,6 @@ public class ChangeLessonStateDialog extends DialogFragment {
                                     break;
                             }
 
-                            RipetizioniApiManager apiManager = ApiFactory.getRipetizioniApiManager(getActivity());
 
                             String finalNewStateDesc = newStateDesc;
                             int finalNewStateCode = newStateCode;

@@ -26,8 +26,7 @@ import it.unito.sabatelli.ripetizioni.ui.fragments.LessonsFragment;
 import it.unito.sabatelli.ripetizioni.ui.fragments.TeacherCourseFragment;
 import it.unito.sabatelli.ripetizioni.ui.fragments.TeacherFragment;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    MainViewModel vModel;
+public class MainActivity extends AbstractActivity implements NavigationView.OnNavigationItemSelectedListener {
     NavigationView navigationView;
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        vModel = ViewModelProviders.of(this).get(MainViewModel.class);
         User user = (User) intent.getSerializableExtra("USER");
         vModel.user = user;
 
@@ -132,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .commit();
                 break;
             case R.id.dr_action_logout:
-                logout(null);
+                logout();
                 break;
             case R.id.dr_action_catalog:
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_id, new CatalogFragment())
@@ -172,13 +170,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // ACTIONS
-    public void logout(String message) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        if(message != null)
-            intent.putExtra("message", message);
-        vModel.user = null;
-        startActivity(intent);
-        finish();
+    public void logout() {
+        apiManager.logout((v) -> {
+            forceClientLogout(null);
+        }, (error) -> {
+            forceClientLogout(error.getMessage());
+        });
     }
 
 
