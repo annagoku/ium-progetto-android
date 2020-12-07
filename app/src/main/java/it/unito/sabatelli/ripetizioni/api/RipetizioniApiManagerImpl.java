@@ -86,7 +86,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
         String path = activity.getString(R.string.main_server_url)+"/public/login";
         client.invalidateSession();
 
-        GsonRequest loginRequest = new GsonRequest(Request.Method.POST, path, null, GenericResponse.class, null,
+        GsonRequest<GenericResponse> loginRequest = new GsonRequest<GenericResponse>(Request.Method.POST, path, null, GenericResponse.class, null,
                 new Response.Listener<GenericResponse>() {
                     @Override
                     public void onResponse(GenericResponse response) {
@@ -102,7 +102,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                     activity.runOnUiThread(() -> {
                         errorListener.onError(checkServerError(error));
                     });
-        }) {
+                }) {
             @Override // metodo Volley per passare i parametri in post
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
@@ -139,10 +139,10 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                 activity.getString(R.string.main_server_url)+"/private/userlog",null,
                 SessionInfoResponse.class,
                 null, (response) -> {
-                System.out.println("Ricevute info utente -> "+response);
-                activity.runOnUiThread(() -> {
-                    listener.onSuccess(response);
-                });
+            System.out.println("Ricevute info utente -> "+response);
+            activity.runOnUiThread(() -> {
+                listener.onSuccess(response);
+            });
         },(error) -> {
 
             activity.runOnUiThread(() -> {
@@ -335,7 +335,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     @Override
     public void changeLessonState(Lesson lesson, String action, int newStateCode, SuccessListener<Void> listener, ErrorListener errorListener) {
 
-        GsonRequest req = new GsonRequest(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/lessons", null, GenericResponse.class, null,
+        GsonRequest<GenericResponse> req = new GsonRequest<GenericResponse>(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/lessons", null, GenericResponse.class, null,
                 new Response.Listener<GenericResponse>() {
                     @Override
                     public void onResponse(GenericResponse response) {
@@ -369,7 +369,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     public void saveNewReservation(Lesson lesson, SuccessListener<User> listener, ErrorListener errorListener) {
 
 
-        GsonRequest req = new GsonRequest(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/newreservation", null, GenericResponse.class, null,
+        GsonRequest<GenericResponse> req = new GsonRequest<GenericResponse>(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/newreservation", null, GenericResponse.class, null,
                 new Response.Listener<GenericResponse>() {
                     @Override
                     public void onResponse(GenericResponse response) {
