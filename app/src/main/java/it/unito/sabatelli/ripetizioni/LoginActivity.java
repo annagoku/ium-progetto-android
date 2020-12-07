@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -14,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -32,20 +36,33 @@ import it.unito.sabatelli.ripetizioni.model.UserSession;
 
 public class LoginActivity extends AbstractActivity {
     User user = null;
+    String message = null;
 
     @Override
     protected void
     onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //esplicita il layout di riferimento
         setContentView(R.layout.activity_login);
-
+        try {
+            this.message = (String ) getIntent().getSerializableExtra("message");
+            if(this.message != null) {
+                Toast.makeText(this, this.message, Toast.LENGTH_LONG).show();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
+
+
+
 
     /** Called when the user taps the Login button */
     public void login(View view) {
         System.out.println("----------LOGIN ");
-
+        //Istanzia l'intent che servirà a trasmettere le info all'attività indicata
         Intent intent = new Intent(this, MainActivity.class);
         TextView errorView = findViewById(R.id.textErrorMessage);
         errorView.setText(null);
@@ -68,30 +85,23 @@ public class LoginActivity extends AbstractActivity {
         progress.setVisibility(View.VISIBLE);
 
         apiManager.login(username, password, (v) -> {
+            //Passaggio intent e start MainActivity
             getUserAndStartActivity(intent);
         }, (error) -> {
 
-                    String message = "Si è verificato un errore";
-                    if(error.networkResponse != null && error.networkResponse.statusCode == 401) {
-                        message = "Credenziali di accesso errate";
-                    }
-                    progress.setVisibility(View.GONE);
+            String message = "Si è verificato un errore";
+            if(error.networkResponse != null && error.networkResponse.statusCode == 401) {
+                message = "Credenziali di accesso errate";
+            }
+            progress.setVisibility(View.GONE);
 
-                    errorView.setText(message);
-                    errorView.setVisibility(View.VISIBLE);
-
+            errorView.setText(message);
+            errorView.setVisibility(View.VISIBLE);
 
         });
 
     }
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (getCurrentFocus() != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
-        return super.dispatchTouchEvent(ev);
-    }
+
 
     private void getUserAndStartActivity(Intent intent) {
         System.out.println("chiamato getUserAndStartActivity");
@@ -109,6 +119,7 @@ public class LoginActivity extends AbstractActivity {
 
             }
             else {
+                //inserire le info nell'intent
                 intent.putExtra("USER", info.getUser());
                 intent.putExtra("SESSIONID", info.getSessionId());
                 progress.setVisibility(View.GONE);
@@ -117,11 +128,9 @@ public class LoginActivity extends AbstractActivity {
             }
         }, (error) -> {
 
-                progress.setVisibility(View.GONE);
-                errorView.setText("Errore di accesso");
-                errorView.setVisibility(View.VISIBLE);
-
-            
+            progress.setVisibility(View.GONE);
+            errorView.setText("Errore di accesso");
+            errorView.setVisibility(View.VISIBLE);
         });
 
 
@@ -133,8 +142,5 @@ public class LoginActivity extends AbstractActivity {
         else
             return -1;
     }
-
-
-
 
 }

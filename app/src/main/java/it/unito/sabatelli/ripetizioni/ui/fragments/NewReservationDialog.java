@@ -20,12 +20,14 @@ import it.unito.sabatelli.ripetizioni.model.Lesson;
 import it.unito.sabatelli.ripetizioni.ui.adapters.LessonListViewAdapter;
 
 public class NewReservationDialog extends AbstractDialogFragment {
-    Lesson lesson;
-    CatalogFragment fragment;
+    final int position;
+    final Lesson lesson;
+    final CatalogFragment fragment;
 
-    public NewReservationDialog(Lesson l, CatalogFragment fragment) {
+    public NewReservationDialog(Lesson l, CatalogFragment fragment, int position) {
         this.lesson = l;
         this.fragment = fragment;
+        this.position = position;
     }
 
 
@@ -44,23 +46,26 @@ public class NewReservationDialog extends AbstractDialogFragment {
                         dialog.dismiss();
 
                          apiManager.saveNewReservation(lesson,
-                                (gr) -> {
-                                     Toast.makeText(act, "Prenotazione salvata correttamente", Toast.LENGTH_SHORT).show();
-                                     fragment.retrieveLessons();
-                                },
-                                (error) -> {
+                            (gr) -> {
+                                 Toast.makeText(act, "Prenotazione salvata correttamente", Toast.LENGTH_SHORT).show();
+                                 fragment.retrieveLessons();
+                            },
+                            (error) -> {
+                                if(!act.isFinishing()) {
                                     Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
+                                }
+                            }
+                        );
 
 
                 }
 
         })
-                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
+        .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
         // Create the AlertDialog object and return it
         return builder.create();
     }

@@ -35,7 +35,7 @@
 
 
         </androidx.appcompat.widget.SearchView>
-
+<!--scrollabile di default-->
         <ListView
             android:id="@+id/catalog_list_view"
             android:layout_width="match_parent"

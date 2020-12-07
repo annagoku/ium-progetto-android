@@ -12,15 +12,17 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.util.Map;
-
+//Presa da guida di Android
+// classe di supporto per Volley e per il controllo di sessione
 public class HttpClientSingleton {
     private static final String SET_COOKIE_KEY = "Set-Cookie";
     private static final String COOKIE_KEY = "Cookie";
     private static final String SESSION_COOKIE = "JSESSIONID";
+    public static final int SOCKET_TIMEOUT_DURATION = 30000;
 
     private static HttpClientSingleton _instance;
 
-    private RequestQueue requestQueue;
+    private RequestQueue requestQueue; //Gestione coda richieste asincrone verso il server
     private static Context ctx;
     private SharedPreferences _preferences;
 
@@ -30,14 +32,14 @@ public class HttpClientSingleton {
 
 
     }
-
+    //Costruttore wrappato per assicurare che venga creata un'unica istanza in un programma in esecuzione
     public static synchronized HttpClientSingleton getInstance(Context context) {
         if (_instance == null) {
             _instance = new HttpClientSingleton(context);
         }
         return _instance;
     }
-
+    //Get da utilizzare solo qunado il context non è accessibile ed è noto che il singleton è già istanziato
     public static  HttpClientSingleton getInstance() {
         if (_instance == null) {
             throw new RuntimeException("Singleton must be initialized");
@@ -50,7 +52,7 @@ public class HttpClientSingleton {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
             requestQueue = Volley.newRequestQueue(ctx.getApplicationContext());
-            _preferences  = PreferenceManager.getDefaultSharedPreferences(ctx.getApplicationContext());
+            _preferences  = PreferenceManager.getDefaultSharedPreferences(ctx.getApplicationContext()); //classe che permette di tener traccia dei cookies
         }
         return requestQueue;
     }
@@ -61,9 +63,24 @@ public class HttpClientSingleton {
     }
 
     public void invalidateSession() {
+
         SharedPreferences.Editor prefEditor = _preferences.edit();
         prefEditor.remove(SESSION_COOKIE);
         prefEditor.commit();
+    }
+
+    public String encodeUrl(String path, String queryString) {
+        StringBuilder b = new StringBuilder();
+        b.append(path);
+        String sessionId = _preferences.getString(SESSION_COOKIE, "");
+        if (sessionId.length() > 0) {
+            b.append(";jsessionid=");
+            b.append(sessionId);
+        }
+        if(queryString != null) {
+            b.append(queryString);
+        }
+        return b.toString();
     }
 
     /**
@@ -75,13 +92,20 @@ public class HttpClientSingleton {
         if (headers.containsKey(SET_COOKIE_KEY)
                 && headers.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
             String cookie = headers.get(SET_COOKIE_KEY);
+            System.out.println(SET_COOKIE_KEY+" -> "+cookie);
             if (cookie.length() > 0) {
                 String[] splitCookie = cookie.split(";");
                 String[] splitSessionId = splitCookie[0].split("=");
-                cookie = splitSessionId[1];
-                SharedPreferences.Editor prefEditor = _preferences.edit();
-                prefEditor.putString(SESSION_COOKIE, cookie);
-                prefEditor.commit();
+                if(splitSessionId.length <2) {
+                    this.invalidateSession();
+                }
+                else {
+                    cookie = splitSessionId[1];
+                    SharedPreferences.Editor prefEditor = _preferences.edit();
+                    prefEditor.putString(SESSION_COOKIE, cookie);
+                    prefEditor.commit();
+                }
+
             }
         }
     }

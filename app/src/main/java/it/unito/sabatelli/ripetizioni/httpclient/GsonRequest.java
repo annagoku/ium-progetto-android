@@ -1,6 +1,7 @@
 package it.unito.sabatelli.ripetizioni.httpclient;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -15,20 +16,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.unito.sabatelli.ripetizioni.LoginActivity;
-
+//da manuale di Android
 public class GsonRequest <T> extends Request<T> {
     private final Gson gson = new Gson();
     private final Class<T> clazz;
     private final Map<String, String> headers;
     private final Response.Listener<T> listener;
+    private final String path;
+    private final String queryString;
 
 
-    public GsonRequest(int method, String url, Class<T> clazz, Map<String, String> headers,
+
+    public GsonRequest(int method, String path, String queryString, Class<T> clazz, Map<String, String> headers,
                        Response.Listener<T> listener, Response.ErrorListener errorListener) {
-        super(method, url, errorListener);
+        super(method, path, errorListener);
         this.clazz = clazz;
+        this.path = path;
+        this.queryString = queryString;
         this.headers = headers;
         this.listener = listener;
+        setRetryPolicy(new DefaultRetryPolicy(HttpClientSingleton.SOCKET_TIMEOUT_DURATION, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+    }
+
+    @Override
+    public String getUrl() {
+        return HttpClientSingleton.getInstance().encodeUrl(path, queryString);
     }
 
     @Override
@@ -42,7 +54,7 @@ public class GsonRequest <T> extends Request<T> {
         }
 
         HttpClientSingleton.getInstance().addSessionCookie(_headers);
-
+        _headers.put("Accept", "application/json");
         return _headers;
     }
 
@@ -64,7 +76,7 @@ public class GsonRequest <T> extends Request<T> {
             System.out.println("Response status -> "+response.statusCode);
             System.out.println("GsonRequest -> data -> "+json);
             return Response.success(
-                    gson.fromJson(json, clazz),
+                    gson.fromJson(json, clazz), //cerca di costruire l'oggetto indicato in clazz dalla stringa Json restituita
                     HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));

@@ -86,13 +86,6 @@ public class TeacherCourseExpandableListAdapter extends BaseExpandableListAdapte
 
         holder.text.setText(getGroup(groupPosition).toString());
 
-      // ExpandableListView mExpandableListView = (ExpandableListView) parent;
-        //mExpandableListView.expandGroup(groupPosition);
-
-
-        System.out.println("Group "+groupPosition+" -> Text: "+text);
-
-
         return convertView;
     }
 
@@ -116,10 +109,8 @@ public class TeacherCourseExpandableListAdapter extends BaseExpandableListAdapte
 
         String text = getChild(groupPosition, childPosition).toString();
 
-         holder.text.setText(text);
-        //( (TextView) convertView.findViewById(R.id.lblListItemCourse)).setText(text);
+        holder.text.setText(text);
 
-        System.out.println("Child group "+groupPosition+" position "+childPosition+" -> Text: "+text);
         return convertView;
     }
 

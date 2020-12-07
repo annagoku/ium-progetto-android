@@ -1,5 +1,7 @@
 package it.unito.sabatelli.ripetizioni.ui.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,15 +12,10 @@ import android.widget.Toast;
 
 import it.unito.sabatelli.ripetizioni.AbstractFragment;
 import it.unito.sabatelli.ripetizioni.R;
-import it.unito.sabatelli.ripetizioni.Utility;
-import it.unito.sabatelli.ripetizioni.api.ApiFactory;
-import it.unito.sabatelli.ripetizioni.api.RipetizioniApiManager;
 import it.unito.sabatelli.ripetizioni.model.Teacher;
-import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
 import it.unito.sabatelli.ripetizioni.ui.adapters.TeacherCourseExpandableListAdapter;
 
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,8 +24,8 @@ import java.util.List;
 public class TeacherCourseFragment extends AbstractFragment {
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
-    ArrayList<String> listDataHeaderTeacher=new ArrayList<>();
-    HashMap<String, List<String>> listDataChildCourse=new HashMap<>();
+    ArrayList<String> listDataHeaderTeacher=null;
+    HashMap<String, List<String>> listDataChildCourse=null;
     View view;
 
 
@@ -51,64 +48,52 @@ public class TeacherCourseFragment extends AbstractFragment {
 
         // get the listview
         expListView = (ExpandableListView) view.findViewById(R.id.lvExp);
+        Context context = this.getContext();
 
-        // preparing list data
-         retrieveTeacherCourse();
+        vModel.teachers.observe(this.getViewLifecycleOwner(), new Observer<List<Teacher>>() {
+            @Override
+            public void onChanged(List<Teacher> teachers) {
+                listDataHeaderTeacher=new ArrayList<>();
+                listDataChildCourse=new HashMap<>();
 
+                for (Teacher t : teachers) {
 
-        return view;
-    }
-
-    private void retrieveTeacherCourse() {
-
-        apiManager.getTeachers((teacherList) -> {
-                    vModel.teachers.clear();
-                    vModel.teachers.addAll(teacherList);
-
-                    for (Teacher t : vModel.teachers) {
-
-                        listDataChildCourse.put(t.getFullName(), t.getCourseTeacherLinked());
-                    }
-                    for (String key: listDataChildCourse.keySet()){
-                        if (listDataChildCourse.get(key).size()==0){
-                            listDataChildCourse.remove(key);
-                        }
-                    }
-
-            listDataHeaderTeacher = new ArrayList<String>(listDataChildCourse.keySet());
-
-
-            listAdapter = new TeacherCourseExpandableListAdapter(this.getContext(),  listDataHeaderTeacher, listDataChildCourse);
-
-
-                    // setting list adapter
-            expListView.setAdapter(listAdapter);
-
-
-
-            expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener()  {
-
-                @Override
-                public boolean onGroupClick(ExpandableListView parent, View v,
-                                            int groupPosition, long id) {
-                     Toast.makeText(getActivity().getApplicationContext(),
-                    "Group Clicked " + listDataHeaderTeacher.get(groupPosition),
-                     Toast.LENGTH_SHORT).show();
-
-                    if (parent.isGroupExpanded(groupPosition)) {
-                        parent.collapseGroup(groupPosition);
-                    } else {
-                        parent.expandGroup(groupPosition);
-                    }
-
-                    return true;
+                    listDataChildCourse.put(t.getFullName(), t.getCourseTeacherLinked());
                 }
-            });
+                for (String key: listDataChildCourse.keySet()){
+                    if (listDataChildCourse.get(key).size()==0){
+                        listDataChildCourse.remove(key);
+                    }
+                }
 
-        }, (error) -> {
-            if(!Utility.isSessionExpired(error, view)) {
-                Toast.makeText(getActivity(), "Received status "+error.networkResponse.statusCode, Toast.LENGTH_SHORT).show();
+                listDataHeaderTeacher = new ArrayList<String>(listDataChildCourse.keySet());
 
+                listAdapter = new TeacherCourseExpandableListAdapter(context,  listDataHeaderTeacher, listDataChildCourse);
+
+
+                // setting list adapter
+                expListView.setAdapter(listAdapter);
+
+
+
+                expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener()  {
+
+                    @Override
+                    public boolean onGroupClick(ExpandableListView parent, View v,
+                                                int groupPosition, long id) {
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                "Group Clicked " + listDataHeaderTeacher.get(groupPosition),
+                                Toast.LENGTH_SHORT).show();
+
+                        if (parent.isGroupExpanded(groupPosition)) {
+                            parent.collapseGroup(groupPosition);
+                        } else {
+                            parent.expandGroup(groupPosition);
+                        }
+
+                        return true;
+                    }
+                });
             }
         });
 
@@ -147,11 +132,21 @@ public class TeacherCourseFragment extends AbstractFragment {
             }
         });
 
+        // preparing list data
+        retrieveTeacherCourse();
 
+        return view;
     }
 
+    private void retrieveTeacherCourse() {
+        Activity act = getActivity();
+        apiManager.getTeachers((teacherList) -> {
+           vModel.teachers.postValue(teacherList);
+        }, (error) -> {
+            if(!act.isFinishing()) {
+                Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
-
-
-    //
+    }
 }

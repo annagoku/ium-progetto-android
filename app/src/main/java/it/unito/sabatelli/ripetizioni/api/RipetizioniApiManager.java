@@ -10,6 +10,7 @@ import it.unito.sabatelli.ripetizioni.model.SessionInfoResponse;
 import it.unito.sabatelli.ripetizioni.model.Teacher;
 import it.unito.sabatelli.ripetizioni.model.User;
 
+//Interfaccia con metodi di gestione della chiamata a server
 public interface  RipetizioniApiManager {
     public void login(String username, String password, SuccessListener<Void> listener, ErrorListener errorListener);
     public void logout(SuccessListener<Void> listener, ErrorListener errorListener);

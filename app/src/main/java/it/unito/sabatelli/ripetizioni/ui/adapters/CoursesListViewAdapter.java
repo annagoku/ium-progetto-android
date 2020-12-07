@@ -18,9 +18,9 @@ import it.unito.sabatelli.ripetizioni.model.Lesson;
 
 public class CoursesListViewAdapter extends BaseAdapter {
     Context context;
-    ArrayList<Course> arrayList = new ArrayList<>();
+    List<Course> arrayList = new ArrayList<>();
 
-    public CoursesListViewAdapter(Context ctx, ArrayList<Course> list) {
+    public CoursesListViewAdapter(Context ctx, List<Course> list) {
         this.arrayList.addAll(list);
         this.context = ctx;
     }
@@ -52,14 +52,13 @@ public class CoursesListViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-
+  //se la view non è stata creata gonfia un elemento della lista
         if (convertView == null) {
             convertView = LayoutInflater.from(context).
                     inflate(R.layout.course_item, parent, false);
         }
 
         Course l = (Course) getItem(position);
-        //System.out.println("Creating view for lesson "+l);
         ((TextView) convertView.findViewById(R.id.text_course_name)).setText(l.getName());
 
         return convertView;

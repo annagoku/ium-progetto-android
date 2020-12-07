@@ -17,15 +17,15 @@ import it.unito.sabatelli.ripetizioni.model.Lesson;
 
 public class CatalogListViewAdapter extends BaseAdapter implements Filterable {
     Context context;
-    ArrayList<Lesson> originalList = new ArrayList<>();
+    List<Lesson> originalList = new ArrayList<>();
     private ValueFilter valueFilter;
-    private ArrayList<Lesson> lessonFilterList=new ArrayList<>();
+    private List<Lesson> lessonFilterList=new ArrayList<>();
 
 
 
 
 
-    public CatalogListViewAdapter(Context ctx, ArrayList<Lesson> list) {
+    public CatalogListViewAdapter(Context ctx, List<Lesson> list) {
         this.originalList.addAll(list);
         this.lessonFilterList.addAll(list);
 
@@ -37,7 +37,7 @@ public class CatalogListViewAdapter extends BaseAdapter implements Filterable {
         this.originalList.addAll(data);
         this.lessonFilterList.clear();
         this.lessonFilterList.addAll(data);
-        this.notifyDataSetChanged();
+        this.notifyDataSetChanged(); // notifica i cambiamenti agli osservatori
     }
 
     @Override

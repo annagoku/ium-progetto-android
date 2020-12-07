@@ -17,7 +17,7 @@ public abstract class AbstractDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        vModel = ViewModelProviders.of(this.getActivity()).get(MainViewModel.class);
         apiManager = ApiFactory.getRipetizioniApiManager((AbstractActivity) getActivity());
     }
 

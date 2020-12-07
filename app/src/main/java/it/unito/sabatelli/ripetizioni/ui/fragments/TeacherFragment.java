@@ -1,5 +1,6 @@
 package it.unito.sabatelli.ripetizioni.ui.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,17 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+
+import java.util.List;
 
 import it.unito.sabatelli.ripetizioni.AbstractFragment;
 import it.unito.sabatelli.ripetizioni.R;
-import it.unito.sabatelli.ripetizioni.Utility;
-import it.unito.sabatelli.ripetizioni.api.ApiFactory;
-import it.unito.sabatelli.ripetizioni.api.RipetizioniApiManager;
 import it.unito.sabatelli.ripetizioni.model.Teacher;
-import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
-import it.unito.sabatelli.ripetizioni.ui.adapters.CoursesListViewAdapter;
 import it.unito.sabatelli.ripetizioni.ui.adapters.TeachersListViewAdapter;
 
 public class TeacherFragment extends AbstractFragment {
@@ -45,8 +42,14 @@ public class TeacherFragment extends AbstractFragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_teacher, container, false);
         listView = view.findViewById(R.id.teachers_list_view);
-        adapter = new TeachersListViewAdapter(this.getContext(), vModel.teachers);
+        adapter = new TeachersListViewAdapter(this.getContext(), vModel.teachers.getValue());
         listView.setAdapter(adapter);
+        vModel.teachers.observe(this.getViewLifecycleOwner(), new Observer<List<Teacher>>() {
+            @Override
+            public void onChanged(List<Teacher> teachers) {
+                adapter.reload(teachers);
+            }
+        });
 
 
         retrieveTeacher();
@@ -55,15 +58,12 @@ public class TeacherFragment extends AbstractFragment {
 
 
     private void retrieveTeacher() {
-
+        Activity act = getActivity();
         apiManager.getTeachers((teacherList) -> {
-            vModel.teachers.clear();
-            vModel.teachers.addAll(teacherList);
-            adapter.reload(vModel.teachers);
+            vModel.teachers.postValue(teacherList);
         }, (error) -> {
-            if(!Utility.isSessionExpired(error, view)) {
-                Toast.makeText(getActivity(), "Received status "+error.networkResponse.statusCode, Toast.LENGTH_SHORT).show();
-
+            if(!act.isFinishing()) {
+                Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 

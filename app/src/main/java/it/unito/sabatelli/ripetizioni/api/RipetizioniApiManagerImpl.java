@@ -1,7 +1,6 @@
 package it.unito.sabatelli.ripetizioni.api;
 
 import android.app.Activity;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -20,7 +19,6 @@ import java.util.Map;
 
 import it.unito.sabatelli.ripetizioni.AbstractActivity;
 import it.unito.sabatelli.ripetizioni.R;
-import it.unito.sabatelli.ripetizioni.Utility;
 import it.unito.sabatelli.ripetizioni.httpclient.GsonRequest;
 import it.unito.sabatelli.ripetizioni.httpclient.HttpClientSingleton;
 import it.unito.sabatelli.ripetizioni.httpclient.StringRequest;
@@ -33,10 +31,10 @@ import it.unito.sabatelli.ripetizioni.model.Teacher;
 import it.unito.sabatelli.ripetizioni.model.User;
 
 public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
-
     private final AbstractActivity activity;
     private final HttpClientSingleton client;
 
+    //costruttore
     public RipetizioniApiManagerImpl(AbstractActivity activity) {
         this.activity = activity;
         this.client = HttpClientSingleton.getInstance(activity.getApplicationContext());
@@ -45,23 +43,27 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     private VolleyError checkServerError (VolleyError error) {
         String errorMessage = "Si è verificato un errore";
         if(error.networkResponse != null) {
-            if(error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 403) {
-                System.err.println("Ricevuto status "+error.networkResponse.statusCode+" forzo il logout utente");
+            System.out.println("Response status "+error.networkResponse.statusCode);
+            if(error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 403 || error.networkResponse.statusCode == 440) {
+                System.out.println("Ricevuto status "+error.networkResponse.statusCode+" forzo il logout utente");
                 client.invalidateSession();
                 activity.forceClientLogout("Sessione scaduta o problemi con autorizzazione. Rieffettuare login");
+                activity.finish();
                 return error;
             }
             else {
                 // controllo se è possibile che la risposta sia una generic response
                 // in quel caso contiene il messaggio di errore da far comparire
                 String contentType = error.networkResponse.headers.get("Content-Type");
+                System.out.println("Response contentType "+contentType);
 
-                if("application/json".equalsIgnoreCase(contentType)) {
+                if(contentType.startsWith("application/json")) {
                     try {
                         String json = new String(
                                 error.networkResponse.data,
                                 HttpHeaderParser.parseCharset(error.networkResponse.headers));
                         GenericResponse gr = new Gson().fromJson(json, GenericResponse.class);
+                        System.out.println("GenericResponse error -> "+errorMessage);
                         errorMessage = gr.getErrorOccurred();
 
                     }
@@ -73,20 +75,23 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
             }
         }
         else {
-            return error;
+            error.printStackTrace();
+
+            return new VolleyError(errorMessage);
         }
     }
 
     @Override
     public void login(String username, String password, SuccessListener<Void> listener, ErrorListener errorListener) {
         String path = activity.getString(R.string.main_server_url)+"/public/login";
+        client.invalidateSession();
 
-        GsonRequest loginRequest = new GsonRequest(Request.Method.POST, path, GenericResponse.class, null,
+        GsonRequest loginRequest = new GsonRequest(Request.Method.POST, path, null, GenericResponse.class, null,
                 new Response.Listener<GenericResponse>() {
                     @Override
                     public void onResponse(GenericResponse response) {
                         System.out.println("Risposta da login "+response);
-                        activity.runOnUiThread(() -> {
+                        activity.runOnUiThread(() -> { //assicura che qualsiasi cosa relativa all'interfaccia  giri sul thread dell'UI
                             listener.onSuccess(null);
                         });
 
@@ -98,7 +103,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                         errorListener.onError(checkServerError(error));
                     });
         }) {
-            @Override
+            @Override // metodo Volley per passare i parametri in post
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
                 params.put("user", username);
@@ -113,7 +118,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     @Override
     public void logout(SuccessListener<Void> listener, ErrorListener errorListener) {
         GsonRequest<GenericResponse> request = new GsonRequest<GenericResponse>(Request.Method.GET,
-                activity.getString(R.string.main_server_url)+"/private/logout",
+                activity.getString(R.string.main_server_url)+"/private/logout", null,
                 GenericResponse.class,
                 null, (response) -> {
             activity.runOnUiThread(() -> {
@@ -131,7 +136,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     public void getUserInfo(SuccessListener<SessionInfoResponse> listener, ErrorListener errorListener) {
 
         GsonRequest<SessionInfoResponse> request = new GsonRequest<SessionInfoResponse>(Request.Method.GET,
-                activity.getString(R.string.main_server_url)+"/private/userlog",
+                activity.getString(R.string.main_server_url)+"/private/userlog",null,
                 SessionInfoResponse.class,
                 null, (response) -> {
                 System.out.println("Ricevute info utente -> "+response);
@@ -151,7 +156,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     public void getReservations(SuccessListener<List<Lesson>> listener, ErrorListener errorListener) {
         StringRequest request = new StringRequest(
                 Request.Method.GET,
-                activity.getString(R.string.main_server_url)+"/private/lessons?list", null,
+                activity.getString(R.string.main_server_url)+"/private/lessons", "?list", null,
                 new Response.Listener<String> () {
 
                     @Override
@@ -198,7 +203,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
 
         StringRequest request = new StringRequest(
                 Request.Method.GET,
-                activity.getString(R.string.main_server_url)+"/private/catalog", null,
+                activity.getString(R.string.main_server_url)+"/private/catalog", null,null,
                 new Response.Listener<String> () {
 
                     @Override
@@ -244,7 +249,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     public void getCourses(SuccessListener<List<Course>> listener, ErrorListener errorListener) {
         StringRequest request = new StringRequest(
                 Request.Method.GET,
-                activity.getString(R.string.main_server_url)+"/public/courses?filter=home", null,
+                activity.getString(R.string.main_server_url)+"/public/courses", "?filter=home", null,
                 new Response.Listener<String> () {
 
                     @Override
@@ -287,7 +292,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     public void getTeachers(SuccessListener<List<Teacher>> listener, ErrorListener errorListener) {
         StringRequest request = new StringRequest(
                 Request.Method.GET,
-                activity.getString(R.string.main_server_url)+"/public/teachers?filter=home", null,
+                activity.getString(R.string.main_server_url)+"/public/teachers", "?filter=home", null,
                 new Response.Listener<String> () {
 
                     @Override
@@ -330,7 +335,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     @Override
     public void changeLessonState(Lesson lesson, String action, int newStateCode, SuccessListener<Void> listener, ErrorListener errorListener) {
 
-        GsonRequest req = new GsonRequest(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/lessons", GenericResponse.class, null,
+        GsonRequest req = new GsonRequest(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/lessons", null, GenericResponse.class, null,
                 new Response.Listener<GenericResponse>() {
                     @Override
                     public void onResponse(GenericResponse response) {
@@ -364,7 +369,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
     public void saveNewReservation(Lesson lesson, SuccessListener<User> listener, ErrorListener errorListener) {
 
 
-        GsonRequest req = new GsonRequest(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/newreservation", GenericResponse.class, null,
+        GsonRequest req = new GsonRequest(Request.Method.POST, activity.getString(R.string.main_server_url)+"/private/newreservation", null, GenericResponse.class, null,
                 new Response.Listener<GenericResponse>() {
                     @Override
                     public void onResponse(GenericResponse response) {

@@ -28,7 +28,7 @@ public class LessonListViewAdapter extends BaseAdapter {
     }
 
 
-    public LessonListViewAdapter(Context ctx, ArrayList<Lesson> list) {
+    public LessonListViewAdapter(Context ctx, List<Lesson> list) {
         this.arrayList.addAll(list);
         this.context = ctx;
     }
@@ -78,7 +78,7 @@ public class LessonListViewAdapter extends BaseAdapter {
         }
 
         Lesson l = (Lesson) getItem(position);
-        //System.out.println("Creating view for lesson "+l);
+
         viewHolder.daycontent.setText(l.getDay().getDayname()+" "+l.getSlot().getStartHour());
         viewHolder.course.setText(l.getCourse().getName());
         viewHolder.teacher.setText(l.getTeacher().getFullName());

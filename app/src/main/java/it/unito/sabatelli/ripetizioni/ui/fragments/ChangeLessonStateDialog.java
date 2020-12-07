@@ -19,11 +19,13 @@ import it.unito.sabatelli.ripetizioni.model.Lesson;
 import it.unito.sabatelli.ripetizioni.ui.adapters.LessonListViewAdapter;
 
 public class ChangeLessonStateDialog extends AbstractDialogFragment {
-    Lesson lesson;
+    final Lesson lesson;
+    final int position;
 
 
-    public ChangeLessonStateDialog(Lesson l) {
+    public ChangeLessonStateDialog(Lesson l, int position) {
         this.lesson = l;
+        this.position = position;
     }
 
 
@@ -66,25 +68,22 @@ public class ChangeLessonStateDialog extends AbstractDialogFragment {
                             }
 
 
-                            String finalNewStateDesc = newStateDesc;
-                            int finalNewStateCode = newStateCode;
+                            final String finalNewStateDesc = newStateDesc;
+                            final int finalNewStateCode = newStateCode;
                             String action ="modificastato";
+                            //comunicazione al server
                             apiManager.changeLessonState(lesson, action, newStateCode,
-                                    (v)-> {
-                                        lesson.getState().setName(finalNewStateDesc);
-                                        lesson.getState().setCode(finalNewStateCode);
-                                        ((BaseAdapter)((ListView)act.findViewById(R.id.lessons_list_view)).getAdapter()).notifyDataSetChanged();
-                                        Toast.makeText(act, "Modifica effettuata con successo ", Toast.LENGTH_SHORT).show();
-                                    },
-                                    (error) -> {
-                                        Toast.makeText(act, "Errore nel salvataggio ", Toast.LENGTH_SHORT).show();
+                                (v)-> {
+                                    vModel.reservations.changeLessonState(position, finalNewStateCode, finalNewStateDesc);
 
-                                    });
-
-
+                                    Toast.makeText(act, "Modifica effettuata con successo ", Toast.LENGTH_SHORT).show();
+                                },
+                                (error) -> {
+                                    if(!act.isFinishing()) {
+                                        Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-
-
                     }
                 })
                 .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {

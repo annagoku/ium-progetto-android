@@ -1,5 +1,6 @@
 package it.unito.sabatelli.ripetizioni.ui.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,27 +9,14 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import java.util.List;
 
 import it.unito.sabatelli.ripetizioni.AbstractFragment;
 import it.unito.sabatelli.ripetizioni.R;
-import it.unito.sabatelli.ripetizioni.Utility;
-import it.unito.sabatelli.ripetizioni.api.ApiFactory;
-import it.unito.sabatelli.ripetizioni.api.RipetizioniApiManager;
-import it.unito.sabatelli.ripetizioni.httpclient.HttpClientSingleton;
-import it.unito.sabatelli.ripetizioni.httpclient.StringRequest;
 import it.unito.sabatelli.ripetizioni.model.Course;
 import it.unito.sabatelli.ripetizioni.ui.adapters.CoursesListViewAdapter;
-import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
 
 public class CoursesFragment extends AbstractFragment {
 
@@ -43,6 +31,7 @@ public class CoursesFragment extends AbstractFragment {
     }
 
 
+// in tutte le classi fragment manca l'override del setonclicklistener per la navigazione tra fragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,8 +45,17 @@ public class CoursesFragment extends AbstractFragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_courses, container, false);
         listView = view.findViewById(R.id.courses_list_view);
-        adapter = new CoursesListViewAdapter(this.getContext(), vModel.courses);
+        Context ctx = this.getContext();
+        adapter = new CoursesListViewAdapter(ctx, vModel.courses.getValue());
         listView.setAdapter(adapter);
+
+
+        vModel.courses.observe(this.getViewLifecycleOwner(), new Observer<List<Course>>() {
+            @Override
+            public void onChanged(List<Course> courses) {
+                adapter.reload(courses);
+            }
+        });
 
 
         retrieveCourses();
@@ -66,15 +64,12 @@ public class CoursesFragment extends AbstractFragment {
 
 
     private void retrieveCourses() {
-
+        Activity act = getActivity();
         apiManager.getCourses((courseList) -> {
-            vModel.courses.clear();
-            vModel.courses.addAll(courseList);
-            adapter.reload(vModel.courses);
+            vModel.courses.postValue(courseList);
         }, (error) -> {
-            if(!Utility.isSessionExpired(error, view)) {
-                Toast.makeText(getActivity(), "Received status "+error.networkResponse.statusCode, Toast.LENGTH_SHORT).show();
-
+            if(!act.isFinishing()) {
+                Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 

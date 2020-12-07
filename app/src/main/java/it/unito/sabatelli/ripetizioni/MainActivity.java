@@ -29,12 +29,13 @@ import it.unito.sabatelli.ripetizioni.ui.fragments.TeacherFragment;
 public class MainActivity extends AbstractActivity implements NavigationView.OnNavigationItemSelectedListener {
     NavigationView navigationView;
     DrawerLayout drawerLayout;
-    ActionBarDrawerToggle drawerToggle;
+    ActionBarDrawerToggle drawerToggle; //hamburgher menu
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        vModel.init();
 
         Intent intent = getIntent();
         User user = (User) intent.getSerializableExtra("USER");
@@ -52,6 +53,7 @@ public class MainActivity extends AbstractActivity implements NavigationView.OnN
      */
     private void initializeViews() {
         setContentView(R.layout.activity_main);
+        //istanzia il toolbar e lo lega all'activity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -65,6 +67,7 @@ public class MainActivity extends AbstractActivity implements NavigationView.OnN
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
+        //gestione bottone up--> disabilitati
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -96,6 +99,7 @@ public class MainActivity extends AbstractActivity implements NavigationView.OnN
         return true;
     }
 
+    //Gestione apertura e chiusura menù laterale
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -110,15 +114,17 @@ public class MainActivity extends AbstractActivity implements NavigationView.OnN
      * Iterates through all the items in the navigation menu and deselects them:
      * removes the selection color
      */
-    private void deSelectCheckedState(){
+    /*private void deSelectCheckedState(){
         int noOfItems = navigationView.getMenu().size();
         for (int i=0; i<noOfItems;i++){
             navigationView.getMenu().getItem(i).setChecked(false);
         }
-    }
+    }*/
 
 
-    @SuppressWarnings("StatementWithEmptyBody")
+    //StatementWithEmptyBody   Unico medoto della classe implementata
+    //Non esiste una navigazione tra fragment ma l'activityMain con il suo menu funziona da hub tra i fragment
+    //Non è stato perciò definito un file Nav_graph.xml
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -143,12 +149,9 @@ public class MainActivity extends AbstractActivity implements NavigationView.OnN
             case R.id.dr_action_teachers:
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_id, new TeacherFragment())
                         .commit();
-                //Toast.makeText(this, "Insegnanti non ancora implementato", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.dr_action_courses_teacher:
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_id, new TeacherCourseFragment())
-                        .commit();
-                //Toast.makeText(this, " Associazione Insegnanti e corsi non ancora implementato", Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_id, new TeacherCourseFragment()).commit();
                 break;
             default:
                 Toast.makeText(this, "AZIONE NON DISPONIBILE", Toast.LENGTH_SHORT).show();
@@ -159,6 +162,8 @@ public class MainActivity extends AbstractActivity implements NavigationView.OnN
 
         return true;
     }
+
+
 
     /**
      * Checks if the navigation drawer is open - if so, close it
