@@ -72,13 +72,18 @@ public class ChangeLessonStateDialog extends AbstractDialogFragment {
                             final int finalNewStateCode = newStateCode;
                             String action ="modificastato";
                             //comunicazione al server
+                            vModel.loading.postValue(Boolean.TRUE);
+
                             apiManager.changeLessonState(lesson, action, newStateCode,
                                 (v)-> {
+                                    vModel.loading.postValue(Boolean.FALSE);
                                     vModel.reservations.changeLessonState(position, finalNewStateCode, finalNewStateDesc);
 
                                     Toast.makeText(act, "Modifica effettuata con successo ", Toast.LENGTH_SHORT).show();
                                 },
                                 (error) -> {
+                                    vModel.loading.postValue(Boolean.FALSE);
+
                                     if(!act.isFinishing()) {
                                         Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
                                 }

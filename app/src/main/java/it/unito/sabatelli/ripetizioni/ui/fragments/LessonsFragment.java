@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import it.unito.sabatelli.ripetizioni.AbstractFragment;
 import it.unito.sabatelli.ripetizioni.R;
 import it.unito.sabatelli.ripetizioni.model.Lesson;
+import it.unito.sabatelli.ripetizioni.ui.MainViewModel;
 import it.unito.sabatelli.ripetizioni.ui.adapters.LessonListViewAdapter;
 
 public class LessonsFragment extends AbstractFragment {
@@ -69,9 +70,12 @@ public class LessonsFragment extends AbstractFragment {
     private void retrieveLessons() {
         Activity act = getActivity();
 
+        vModel.loading.postValue(Boolean.TRUE);
         apiManager.getReservations((listLessons) -> {
             vModel.reservations.postValue(listLessons);
+            vModel.loading.postValue(Boolean.FALSE);
         }, (error) -> {
+            vModel.loading.postValue(Boolean.FALSE);
             if(!act.isFinishing()) {
                 Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
             }

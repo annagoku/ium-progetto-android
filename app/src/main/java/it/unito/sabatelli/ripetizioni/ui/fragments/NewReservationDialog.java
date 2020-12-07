@@ -44,13 +44,18 @@ public class NewReservationDialog extends AbstractDialogFragment {
                 .setPositiveButton(R.string.dialog_save, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
+                        vModel.loading.postValue(Boolean.TRUE);
 
-                         apiManager.saveNewReservation(lesson,
+                        apiManager.saveNewReservation(lesson,
                             (gr) -> {
-                                 Toast.makeText(act, "Prenotazione salvata correttamente", Toast.LENGTH_SHORT).show();
+                                vModel.loading.postValue(Boolean.FALSE);
+
+                                Toast.makeText(act, "Prenotazione salvata correttamente", Toast.LENGTH_SHORT).show();
                                  fragment.retrieveLessons();
                             },
                             (error) -> {
+                                vModel.loading.postValue(Boolean.FALSE);
+
                                 if(!act.isFinishing()) {
                                     Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
                                 }

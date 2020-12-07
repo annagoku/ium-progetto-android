@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,7 +71,17 @@ public class MainActivity extends AbstractActivity implements NavigationView.OnN
         //gestione bottone up--> disabilitati
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
+        ProgressBar progressBar = findViewById(R.id.progress_main);
 
+        vModel.loading.observe(this, (value) -> {
+            System.out.println("ProgressBar visibility change to "+value);
+            if(value.booleanValue()) {
+                progressBar.setVisibility(View.VISIBLE);
+            }
+            else {
+                progressBar.setVisibility(View.GONE);
+            }
+        });
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

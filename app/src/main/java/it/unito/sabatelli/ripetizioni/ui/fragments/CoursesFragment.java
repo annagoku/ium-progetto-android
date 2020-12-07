@@ -65,9 +65,14 @@ public class CoursesFragment extends AbstractFragment {
 
     private void retrieveCourses() {
         Activity act = getActivity();
+        vModel.loading.postValue(Boolean.TRUE);
+
         apiManager.getCourses((courseList) -> {
+            vModel.loading.postValue(Boolean.FALSE);
             vModel.courses.postValue(courseList);
         }, (error) -> {
+            vModel.loading.postValue(Boolean.FALSE);
+
             if(!act.isFinishing()) {
                 Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
             }

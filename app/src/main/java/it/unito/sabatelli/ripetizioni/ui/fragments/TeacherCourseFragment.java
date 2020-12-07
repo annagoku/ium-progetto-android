@@ -140,9 +140,15 @@ public class TeacherCourseFragment extends AbstractFragment {
 
     private void retrieveTeacherCourse() {
         Activity act = getActivity();
+        vModel.loading.postValue(Boolean.TRUE);
+
         apiManager.getTeachers((teacherList) -> {
-           vModel.teachers.postValue(teacherList);
+            vModel.loading.postValue(Boolean.FALSE);
+
+            vModel.teachers.postValue(teacherList);
         }, (error) -> {
+            vModel.loading.postValue(Boolean.FALSE);
+
             if(!act.isFinishing()) {
                 Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
             }

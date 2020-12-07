@@ -41,7 +41,7 @@ public class CatalogFragment extends AbstractFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_catalog, container, false);
-        System.out.println("HO CREATO IL LAYOUT LESSONS!!!!!!!!!!!!!!!!!");
+
         listView = view.findViewById(R.id.catalog_list_view);
         listView.setTextFilterEnabled(true);
 
@@ -95,10 +95,15 @@ public class CatalogFragment extends AbstractFragment {
 
         Activity act = getActivity();
 
+        vModel.loading.postValue(Boolean.TRUE);
 
         apiManager.getCatalog((list) -> {
+            vModel.loading.postValue(Boolean.FALSE);
+
             vModel.catalogItems.postValue(list);
         }, (error) -> {
+            vModel.loading.postValue(Boolean.FALSE);
+
             if(!act.isFinishing()) {
                 Toast.makeText(act, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
