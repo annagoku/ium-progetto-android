@@ -19,24 +19,18 @@ public class StringRequest extends Request<String> {
     private final Map<String, String> headers;
     private final Response.Listener<String> listener;
     private final String path;
-    private final String queryString;
 
 
-    public StringRequest(int method, String path, String queryString,  Map<String, String> headers,
+    public StringRequest(int method, String path,  Map<String, String> headers,
                          Response.Listener<String> listener, Response.ErrorListener errorListener) {
         super(method, path, errorListener);
         this.path = path;
-        this.queryString = queryString;
         this.headers = headers;
         this.listener = listener;
         setRetryPolicy(new DefaultRetryPolicy(HttpClientSingleton.SOCKET_TIMEOUT_DURATION, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
     }
 
-    @Override
-    public String getUrl() {
-        return HttpClientSingleton.getInstance().encodeUrl(path, queryString);
-    }
 
     //Gestione Header
     @Override

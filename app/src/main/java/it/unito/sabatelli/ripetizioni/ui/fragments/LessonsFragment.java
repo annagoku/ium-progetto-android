@@ -42,7 +42,7 @@ public class LessonsFragment extends AbstractFragment {
 
         listView = view.findViewById(R.id.lessons_list_view);
         vModel.reservations.setValue(new ArrayList<>());
-        adapter = new LessonListViewAdapter(this.getContext(), vModel.reservations.getValue());
+        adapter = new LessonListViewAdapter(this.getContext(), vModel.reservations.getValue(), vModel.user.getRole().equalsIgnoreCase("administrator"));
         listView.setAdapter(adapter);
 
         vModel.reservations.observe(this.getViewLifecycleOwner(), (list) -> {
@@ -55,7 +55,7 @@ public class LessonsFragment extends AbstractFragment {
                 Lesson lesson = (Lesson) parent.getAdapter().getItem(position);
 
                 if(lesson.getState().getCode() == 1) { // se è prenotata
-                    ChangeLessonStateDialog dialog = new ChangeLessonStateDialog(lesson, position);
+                    ChangeLessonStateDialog dialog = new ChangeLessonStateDialog(lesson, position, vModel.user.getRole().equalsIgnoreCase("administrator"));
 
                     dialog.show(getActivity().getSupportFragmentManager(), "ChangeLessonStateDialog");
                 }

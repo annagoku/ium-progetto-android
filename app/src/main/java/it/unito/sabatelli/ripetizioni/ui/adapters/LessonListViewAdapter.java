@@ -18,6 +18,7 @@ import it.unito.sabatelli.ripetizioni.model.Lesson;
 
 public class LessonListViewAdapter extends BaseAdapter {
     Context context;
+    boolean isAdmin =false;
     ArrayList<Lesson> arrayList = new ArrayList<>();
 
     private static class ViewHolder {
@@ -25,12 +26,14 @@ public class LessonListViewAdapter extends BaseAdapter {
         TextView course;
         TextView teacher;
         TextView state;
+        TextView username;
     }
 
 
-    public LessonListViewAdapter(Context ctx, List<Lesson> list) {
+    public LessonListViewAdapter(Context ctx, List<Lesson> list, boolean isAdmin) {
         this.arrayList.addAll(list);
         this.context = ctx;
+        this.isAdmin = isAdmin;
     }
 
     public void reload(List<Lesson> data) {
@@ -70,6 +73,7 @@ public class LessonListViewAdapter extends BaseAdapter {
             viewHolder.course = (TextView) convertView.findViewById(R.id.text_lesson_item_course);
             viewHolder.teacher = (TextView) convertView.findViewById(R.id.text_lesson_item_teacher);
             viewHolder.state = (TextView) convertView.findViewById(R.id.text_lesson_item_state);
+            viewHolder.username = (TextView) convertView.findViewById(R.id.text_lesson_item_username);
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
         }
@@ -83,7 +87,10 @@ public class LessonListViewAdapter extends BaseAdapter {
         viewHolder.course.setText(l.getCourse().getName());
         viewHolder.teacher.setText(l.getTeacher().getFullName());
         viewHolder.state.setText(l.getState().getName());
-
+        if(isAdmin) {
+            viewHolder.username.setText(l.getUser() != null ? l.getUser().getUsername() : "Utente mancante");
+            viewHolder.username.setVisibility(View.VISIBLE);
+        }
 
         return convertView;
     }

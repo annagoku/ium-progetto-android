@@ -48,17 +48,20 @@ public class CatalogFragment extends AbstractFragment {
 
         CatalogFragment fragment = this;
 
+        //permetto di prenotare solo agli studenti
+        if(vModel.user.getRole().equalsIgnoreCase("student")) {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+                    Lesson lesson = (Lesson) parent.getAdapter().getItem(position);
+                    NewReservationDialog dialog = new NewReservationDialog(lesson, fragment, position);
+                    dialog.show(getActivity().getSupportFragmentManager(), "NewReservationDialog");
 
-                Lesson lesson = (Lesson) parent.getAdapter().getItem(position);
-                NewReservationDialog dialog = new NewReservationDialog(lesson, fragment, position);
-                dialog.show(getActivity().getSupportFragmentManager(), "NewReservationDialog");
+                }
+            });
 
-            }
-        });
+        }
 
         courseFilter=(SearchView) view.findViewById(R.id.searchCourseFilter);
 

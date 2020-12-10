@@ -55,4 +55,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_lesson_item_course" />
 
+    <TextView
+        android:id="@+id/text_lesson_item_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:visibility="gone"
+        android:text="Username"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_lesson_item_teacher" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

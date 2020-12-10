@@ -67,6 +67,7 @@ public class HttpClientSingleton {
         SharedPreferences.Editor prefEditor = _preferences.edit();
         prefEditor.remove(SESSION_COOKIE);
         prefEditor.commit();
+        System.out.println("Session invalidated");
     }
 
     public String encodeUrl(String path, String queryString) {
@@ -80,7 +81,9 @@ public class HttpClientSingleton {
         if(queryString != null) {
             b.append(queryString);
         }
-        return b.toString();
+        String url = b.toString();
+        System.out.println("Encoded Url -> "+url);
+        return url;
     }
 
     /**

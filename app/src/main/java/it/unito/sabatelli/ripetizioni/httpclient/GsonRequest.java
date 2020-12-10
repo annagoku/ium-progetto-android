@@ -23,25 +23,19 @@ public class GsonRequest <T> extends Request<T> {
     private final Map<String, String> headers;
     private final Response.Listener<T> listener;
     private final String path;
-    private final String queryString;
 
 
 
-    public GsonRequest(int method, String path, String queryString, Class<T> clazz, Map<String, String> headers,
+    public GsonRequest(int method, String path,  Class<T> clazz, Map<String, String> headers,
                        Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, path, errorListener);
         this.clazz = clazz;
         this.path = path;
-        this.queryString = queryString;
         this.headers = headers;
         this.listener = listener;
         setRetryPolicy(new DefaultRetryPolicy(HttpClientSingleton.SOCKET_TIMEOUT_DURATION, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
-    @Override
-    public String getUrl() {
-        return HttpClientSingleton.getInstance().encodeUrl(path, queryString);
-    }
 
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {

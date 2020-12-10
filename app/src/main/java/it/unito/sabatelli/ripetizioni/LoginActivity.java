@@ -1,5 +1,6 @@
 package it.unito.sabatelli.ripetizioni;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -83,12 +84,14 @@ public class LoginActivity extends AbstractActivity {
         ProgressBar progress = findViewById(R.id.progressBar);
 
         progress.setVisibility(View.VISIBLE);
+        LoginActivity act = this;
 
         apiManager.login(username, password, (v) -> {
+            System.out.println("Effettuato login");
             //Passaggio intent e start MainActivity
-            getUserAndStartActivity(intent);
+            act.getUserAndStartActivity(intent);
         }, (error) -> {
-
+            System.out.println("Errore al login -> "+error.getMessage());
             String message = "Si è verificato un errore";
             if(error.networkResponse != null && error.networkResponse.statusCode == 401) {
                 message = "Credenziali di accesso errate";
@@ -110,6 +113,7 @@ public class LoginActivity extends AbstractActivity {
         TextView errorView = findViewById(R.id.textErrorMessage);
         errorView.setText(null);
         errorView.setVisibility(View.INVISIBLE);
+        Activity act = this;
 
         apiManager.getUserInfo((info) -> {
             if(info.getUser() == null) {
@@ -123,8 +127,8 @@ public class LoginActivity extends AbstractActivity {
                 intent.putExtra("USER", info.getUser());
                 intent.putExtra("SESSIONID", info.getSessionId());
                 progress.setVisibility(View.GONE);
-                startActivity(intent);
-                finish();
+                act.startActivity(intent);
+                //act.finish();
             }
         }, (error) -> {
 

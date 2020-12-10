@@ -11,6 +11,7 @@ public class Lesson implements Serializable {
     Slot slot;
     Course course;
     LessonState state;
+    User user;
 
     @NonNull
     @Override
@@ -64,5 +65,13 @@ public class Lesson implements Serializable {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

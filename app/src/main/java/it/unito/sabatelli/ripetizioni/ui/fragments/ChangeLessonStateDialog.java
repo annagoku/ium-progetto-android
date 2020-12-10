@@ -21,20 +21,30 @@ import it.unito.sabatelli.ripetizioni.ui.adapters.LessonListViewAdapter;
 public class ChangeLessonStateDialog extends AbstractDialogFragment {
     final Lesson lesson;
     final int position;
+    boolean isAdmin = false;
 
 
-    public ChangeLessonStateDialog(Lesson l, int position) {
+    public ChangeLessonStateDialog(Lesson l, int position, boolean isAdmin) {
         this.lesson = l;
         this.position = position;
+        this.isAdmin = isAdmin;
     }
 
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final String [] items = new String[] {
-                getString(R.string.dialog_statelesson_done),
-                getString(R.string.dialog_statelesson_delete)};
+        String [] items = null;
+        if(isAdmin) {
+            items =new String[] {
+                    getString(R.string.dialog_statelesson_delete)};
+        }
+        else {
+            items = new String[] {
+                    getString(R.string.dialog_statelesson_delete),
+                    getString(R.string.dialog_statelesson_done)
+                    };
+        }
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -44,7 +54,6 @@ public class ChangeLessonStateDialog extends AbstractDialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                         int selectedPosition = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
-                        System.out.println("ChangeLessonState -> Ho cliccato "+items[selectedPosition]);
 
                         Activity act = getActivity();
                         if(selectedPosition == -1) {
@@ -54,12 +63,12 @@ public class ChangeLessonStateDialog extends AbstractDialogFragment {
                             int  newStateCode = lesson.getState().getCode();
                             String newStateDesc = lesson.getState().getName();
                             switch (selectedPosition) {
-                                case 0:
+                                case 1:
                                     newStateCode = 2;
                                     newStateDesc= "Effettuata";
 
                                     break;
-                                case 1:
+                                case 0:
                                     newStateCode = 3;
                                     newStateDesc= "Annullata";
 

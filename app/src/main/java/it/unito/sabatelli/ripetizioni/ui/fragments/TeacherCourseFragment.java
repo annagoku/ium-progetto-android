@@ -81,10 +81,10 @@ public class TeacherCourseFragment extends AbstractFragment {
                     @Override
                     public boolean onGroupClick(ExpandableListView parent, View v,
                                                 int groupPosition, long id) {
-                        Toast.makeText(getActivity().getApplicationContext(),
+                        /*Toast.makeText(getActivity().getApplicationContext(),
                                 "Group Clicked " + listDataHeaderTeacher.get(groupPosition),
                                 Toast.LENGTH_SHORT).show();
-
+                        */
                         if (parent.isGroupExpanded(groupPosition)) {
                             parent.collapseGroup(groupPosition);
                         } else {
@@ -101,9 +101,9 @@ public class TeacherCourseFragment extends AbstractFragment {
 
             @Override
             public void onGroupExpand(int groupPosition) {
-                Toast.makeText(getActivity().getApplicationContext(),
+                /*Toast.makeText(getActivity().getApplicationContext(),
                         listDataHeaderTeacher.get(groupPosition) + " Expanded",
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_SHORT).show();*/
             }
         });
 

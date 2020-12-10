@@ -43,6 +43,7 @@ public abstract class AbstractActivity extends AppCompatActivity  {
      * il server non riconosce più l'utente loggato
      */
     public void forceClientLogout(String message) {
+        System.out.println("Force client logout -> message : "+message);
         Intent intent = new Intent(this, LoginActivity.class);
         if(message != null)
             intent.putExtra("message", message);

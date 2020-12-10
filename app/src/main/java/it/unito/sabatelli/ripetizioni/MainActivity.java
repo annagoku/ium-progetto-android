@@ -1,5 +1,6 @@
 package it.unito.sabatelli.ripetizioni;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -85,7 +86,6 @@ public class MainActivity extends AbstractActivity implements NavigationView.OnN
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
     }
 
     /**
@@ -187,10 +187,11 @@ public class MainActivity extends AbstractActivity implements NavigationView.OnN
 
     // ACTIONS
     public void logout() {
+        AbstractActivity act = this;
         apiManager.logout((v) -> {
-            forceClientLogout(null);
+            act.forceClientLogout(null);
         }, (error) -> {
-            forceClientLogout(error.getMessage());
+            act.forceClientLogout(error.getMessage());
         });
     }
 
