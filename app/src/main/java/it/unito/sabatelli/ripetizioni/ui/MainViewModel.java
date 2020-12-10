@@ -14,6 +14,7 @@ import it.unito.sabatelli.ripetizioni.model.User;
 public class MainViewModel extends ViewModel {
 
     public User user;
+    public int count;
     public  LessonsMutableLiveData reservations = new LessonsMutableLiveData();
     public  LessonsMutableLiveData catalogItems = new LessonsMutableLiveData();
     public MutableLiveData<List<Teacher>> teachers = new MutableLiveData<>();
@@ -26,6 +27,9 @@ public class MainViewModel extends ViewModel {
         courses.setValue(new ArrayList<>());
         teachers.setValue(new ArrayList<>());
         loading.setValue(Boolean.FALSE);
+        if(user==null){
+            count=0;
+        }
     }
 
 

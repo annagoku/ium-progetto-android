@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -63,6 +64,13 @@ public class LessonsFragment extends AbstractFragment {
         });
 
         retrieveLessons();
+        String welcome ="Benvenuto " + vModel.user.getUsername();
+        if(vModel.count==0) {
+            Toast.makeText(getActivity(), welcome, Toast.LENGTH_SHORT).show();
+            vModel.count = 1;
+        }
+
+
         return view;
     }
 
@@ -72,8 +80,16 @@ public class LessonsFragment extends AbstractFragment {
 
         vModel.loading.postValue(Boolean.TRUE);
         apiManager.getReservations((listLessons) -> {
-            vModel.reservations.postValue(listLessons);
-            vModel.loading.postValue(Boolean.FALSE);
+            if(listLessons.size()>0) {
+                TextView tv = (TextView) view.findViewById(R.id.default_message);
+                tv.setVisibility(View.GONE);
+                vModel.reservations.postValue(listLessons);
+                vModel.loading.postValue(Boolean.FALSE);
+            } else if (listLessons.size()==0) {
+                TextView tv = (TextView) view.findViewById(R.id.default_message);
+                tv.setVisibility(View.VISIBLE);
+                vModel.loading.postValue(Boolean.FALSE);
+            }
         }, (error) -> {
             vModel.loading.postValue(Boolean.FALSE);
             if(!act.isFinishing()) {

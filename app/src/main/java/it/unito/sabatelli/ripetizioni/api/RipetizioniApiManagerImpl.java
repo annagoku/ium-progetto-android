@@ -100,7 +100,7 @@ public class RipetizioniApiManagerImpl implements RipetizioniApiManager {
                 (error) -> {
 
                     activity.runOnUiThread(() -> {
-                        errorListener.onError(checkServerError(error));
+                        errorListener.onError(error);
                     });
                 }) {
             @Override // metodo Volley per passare i parametri in post

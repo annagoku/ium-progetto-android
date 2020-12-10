@@ -23,6 +23,7 @@ public class LessonsMutableLiveData extends MutableLiveData<List<Lesson>> {
         }
     }
 
+
     public void changeLessonState(int position, int newCode, String newName) {
         LessonState state = this.getValue().get(position).getState();
         state.setCode(newCode);
